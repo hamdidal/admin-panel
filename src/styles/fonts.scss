@@ -1,0 +1,35 @@
+:root {
+    --fontFamilyErasDemiITC: 'eras-demi-itc', sans-serif;
+    --fontFamilyManrope: 'Manrope', sans-serif;
+    --fontFamilyInter: 'Inter', sans-serif;
+
+    --fontWeightRegular: 400;
+    --fontWeightMedium: 500;
+    --fontWeightSemiBold: 600;
+    --fontWeightBold: 700;
+    --fontWeightHighBold: 900;
+}
+
+@font-face {
+    font-family: eras-demi-itc;
+    src: local('erasdemi'), url('../assets/Fonts/ErasDemiItc/erasdemi.ttf') format('truetype');
+    font-weight: var(--fontWeightRegular);
+}
+
+@font-face {
+    font-family: Inter;
+    src: local('inter'), url('../assets/Fonts/Inter/Inter-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: Inter;
+    src: local('inter'), url('../assets/Fonts/Inter/Inter-Medium.ttf') format('truetype');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: Inter;
+    src: local('inter'), url('../assets/Fonts/Inter/Inter-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+}
