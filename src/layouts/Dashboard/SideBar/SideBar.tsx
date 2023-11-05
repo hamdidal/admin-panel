@@ -41,7 +41,7 @@ const SideBar: React.FunctionComponent<SideBarProps> = () => {
     {
       subheader: "YETKİ İŞLEMLERİ",
       id: "claims",
-      text: "claims",
+      text: "Yetkiler",
       icon: <SupervisedUserCircleRoundedIcon sx={menuIconsStyles} />,
       path: "/claims",
     },

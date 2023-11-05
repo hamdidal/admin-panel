@@ -25,7 +25,7 @@ import {
 import Button from "../../components/styledComponents/Buttons/Button/Button";
 import { Add, Delete, Update } from "@mui/icons-material";
 import ClaimCreateModal from "./addClaims/claimCreateModal";
-import CityEditModal from "./addClaims/cityEditModal";
+import ClaimEditModal from "./addClaims/claimEditModal";
 import _debounce from "lodash/debounce";
 import Modal from "../../components/styledComponents/Modal/Modal";
 import SearchInput from "../../components/styledComponents/Input/SearchInput/SearchInput";
@@ -198,11 +198,11 @@ const ClaimsPage = () => {
             show={show.mode === "create"}
             onReload={handleReload}
           />
-          <CityEditModal
+          <ClaimEditModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "edit"}
             onReload={handleReload}
-            city={
+            claim={
               data?.data.filter((data: any) => data.id === selectedCityId)[0]
             }
           />

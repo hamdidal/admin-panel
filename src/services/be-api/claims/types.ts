@@ -13,12 +13,9 @@ export interface AddClaimVariables {
 export interface UpdateClaimVariables {
   id: number;
   name: string;
-  isActive: boolean;
 }
 
-export interface UpdateClaimData {
-  data: UpdateClaimVariables;
-}
+
 
 export interface ClaimDetailVariables {
   id: number;

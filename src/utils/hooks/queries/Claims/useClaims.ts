@@ -5,7 +5,7 @@ import {
   AddClaimVariables,
   GetAllClaimsServiceResponse,
   GetClaimByIdVariables,
-  UpdateClaimData,
+  UpdateClaimVariables,
 } from "../../../../services/be-api/claims/types";
 
 export const useGetAllClaim: Query<any, GetAllClaimsServiceResponse> = (
@@ -50,7 +50,7 @@ AddClaimVariables,
 };
 
 export const usePutClaim: Mutation<
-  UpdateClaimData,
+ UpdateClaimVariables,
   GetAllClaimsServiceResponse
 > = () =>
   useBaseMutation({

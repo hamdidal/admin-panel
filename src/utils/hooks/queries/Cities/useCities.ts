@@ -1,6 +1,6 @@
 import { useBaseMutation, useBaseQuery } from "../_Base";
 import { Mutation, Query } from "../types";
-import claimsServices from "../../../../services/be-api/claims";
+import cityServices from "../../../../services/be-api/cities";
 import {
   GetAllCitiesServiceResponse,
   GetCityByIdVariables,
@@ -13,7 +13,7 @@ export const useGetAllCities: Query<any, GetAllCitiesServiceResponse> = (
 ) => {
   return useBaseQuery({
     queryKeys: ["cities", { params: params.queryKeys }],
-    service: claimsServices.getAllClaims,
+    service: cityServices.getAllCities,
     onSuccess: {
       messageDisplay: false,
       message: "Succesfully, get all users",
@@ -34,7 +34,7 @@ export const useCreateCity: Mutation<
   GetAllCitiesServiceResponse
 > = () => {
   return useBaseMutation({
-    service: claimsServices.postAddClaim,
+    service: cityServices.postAddCity,
     onSuccess: {
       messageDisplay: true,
       message: "Ürün Başarı ile Eklenmiştir",
@@ -54,7 +54,7 @@ export const usePutCity: Mutation<
   GetAllCitiesServiceResponse
 > = () =>
   useBaseMutation({
-    service: claimsServices.putClaim,
+    service: cityServices.putCity,
     onSuccess: {
       messageDisplay: true,
       message: "Başarılı bir şekilde giriş yapıldı.",
@@ -73,7 +73,7 @@ export const useDeleteCity: Mutation<
   GetAllCitiesServiceResponse
 > = () =>
   useBaseMutation({
-    service: claimsServices.deleteClaim,
+    service: cityServices.deleteCity,
     onSuccess: {
       messageDisplay: true,
       message: "Başarılı bir şekilde giriş yapıldı.",

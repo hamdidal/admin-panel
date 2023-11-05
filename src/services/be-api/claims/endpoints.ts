@@ -4,7 +4,7 @@ import {
   AddClaimVariables,
   GetAllClaimsServiceResponse,
   GetClaimByIdVariables,
-  UpdateClaimData,
+  UpdateClaimVariables
 } from "./types";
 import { DELETE_CLAIM, GET_CLAIM_ALL, POST_ADD_CLAIM, PUT_UPDATE_CLAIM } from "./constants";
 
@@ -18,7 +18,7 @@ export const postAddClaim: Service<AddClaimVariables> = (data) => {
 
 
 
-export const putClaim: Service<UpdateClaimData> = ({ data }) => {
+export const putClaim: Service<UpdateClaimVariables> = (data) => {
   return Request.put(PUT_UPDATE_CLAIM, data, {});
 };
 

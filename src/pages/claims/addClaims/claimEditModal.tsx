@@ -10,30 +10,30 @@ import { ptr } from "../../../utils/helpers";
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
 import { usePutCity } from "../../../utils/hooks/queries/Cities";
 import Spinner from "../../../components/Spinner";
-import { AllActivityModel } from "../../../services/be-api/activities/types";
+import { AllClaimModel } from "../../../services/be-api/claims/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
+import { usePutClaim } from "../../../utils/hooks/queries/Claims";
 
-interface IActivityCreateModalProps {
+interface IClaimUpdateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  city: AllActivityModel;
+  claim: AllClaimModel;
   onReload: () => void;
 }
 
-const CityEditModal: FC<IActivityCreateModalProps> = ({
+const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
   setShow,
   show,
-  city,
+  claim,
   onReload,
 }) => {
-  const [selectedCity, setSelectedCity] = useState(city?.id);
+  const [selectedClaim, setSelectedClaim] = useState(claim?.id);
 
   const schema = yup
     .object()
     .shape({
-      id: yup.number().required("Ad alanı zorunludur"),
-      name: yup.string().required("Ad alanı zorunludur"),
-      isActive: yup.boolean().required("Aktiflik durumu zorunludur"),
+      id: yup.number().required("Lütfen düzenlenecek kaydı seçin."),
+      name: yup.string().required("Yetki ismi zorunludur."),
     })
     .required();
 
@@ -47,27 +47,25 @@ const CityEditModal: FC<IActivityCreateModalProps> = ({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      id: city?.id,
-      name: city?.name,
-      isActive: city?.isActive,
+      id: claim?.id,
+      name: claim?.name,
     },
   });
 
   useEffect(() => {
-    if (city) {
+    if (claim) {
       reset({
-        id: city.id,
-        name: city.name,
-        isActive: city.isActive,
+        id: claim.id,
+        name: claim.name,
       });
-      setSelectedCity(city?.id);
+      setSelectedClaim(claim?.id);
     }
-  }, [city, reset]);
+  }, [claim, reset]);
 
-  const { mutate } = usePutCity();
+  const { mutate } = usePutClaim();
 
   const handleUpdate = handleSubmit(async (e) => {
-    mutate({ data: e });
+    mutate(e);
     onReload();
     setShow(!show);
   });
@@ -77,7 +75,7 @@ const CityEditModal: FC<IActivityCreateModalProps> = ({
     reset();
   };
 
-  return city ? (
+  return claim ? (
     <Modal
       open={show!}
       onClose={() => handleCancel()}
@@ -88,7 +86,7 @@ const CityEditModal: FC<IActivityCreateModalProps> = ({
       isAdd
     >
       <CustomContainer>
-        <Typography variant="h4-semibold">Şehir Düzenle</Typography>
+        <Typography variant="h4-semibold">Yetki Düzenle</Typography>
 
         <form
           style={{
@@ -114,33 +112,7 @@ const CityEditModal: FC<IActivityCreateModalProps> = ({
               )}
             />
 
-            <BoxOfRow>
-              <Controller
-                name="isActive"
-                control={control}
-                rules={{}}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <MaterialUISwitch
-                        sx={{ m: 1 }}
-                        defaultChecked={city?.isActive}
-                      />
-                    }
-                    label={
-                      watch("isActive")
-                        ? watch("isActive")
-                          ? "Aktif"
-                          : "Pasif"
-                        : city?.isActive
-                        ? "Aktif"
-                        : "Pasif"
-                    }
-                    {...field}
-                  />
-                )}
-              />
-            </BoxOfRow>
+         
           </Form>
         </form>
       </CustomContainer>
@@ -150,4 +122,4 @@ const CityEditModal: FC<IActivityCreateModalProps> = ({
   );
 };
 
-export default CityEditModal;
+export default ClaimEditModal;
