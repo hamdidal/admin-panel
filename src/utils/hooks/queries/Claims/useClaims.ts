@@ -2,13 +2,13 @@ import { useBaseMutation, useBaseQuery } from "../_Base";
 import { Mutation, Query } from "../types";
 import claimsServices from "../../../../services/be-api/claims";
 import {
-  GetAllCitiesServiceResponse,
-  GetCityByIdVariables,
-  PostAddCityVariables,
-  UpdateCityData,
-} from "../../../../services/be-api/cities/types";
+  AddClaimVariables,
+  GetAllClaimsServiceResponse,
+  GetClaimByIdVariables,
+  UpdateClaimData,
+} from "../../../../services/be-api/claims/types";
 
-export const useGetAllCities: Query<any, GetAllCitiesServiceResponse> = (
+export const useGetAllClaim: Query<any, GetAllClaimsServiceResponse> = (
   params
 ) => {
   return useBaseQuery({
@@ -29,9 +29,9 @@ export const useGetAllCities: Query<any, GetAllCitiesServiceResponse> = (
   });
 };
 
-export const useCreateCity: Mutation<
-  PostAddCityVariables,
-  GetAllCitiesServiceResponse
+export const useCreateClaim: Mutation<
+AddClaimVariables,
+  GetAllClaimsServiceResponse
 > = () => {
   return useBaseMutation({
     service: claimsServices.postAddClaim,
@@ -49,9 +49,9 @@ export const useCreateCity: Mutation<
   });
 };
 
-export const usePutCity: Mutation<
-  UpdateCityData,
-  GetAllCitiesServiceResponse
+export const usePutClaim: Mutation<
+  UpdateClaimData,
+  GetAllClaimsServiceResponse
 > = () =>
   useBaseMutation({
     service: claimsServices.putClaim,
@@ -68,9 +68,9 @@ export const usePutCity: Mutation<
     },
   });
 
-export const useDeleteCity: Mutation<
-  GetCityByIdVariables,
-  GetAllCitiesServiceResponse
+export const useDeleteClaim: Mutation<
+GetClaimByIdVariables,
+  GetAllClaimsServiceResponse
 > = () =>
   useBaseMutation({
     service: claimsServices.deleteClaim,

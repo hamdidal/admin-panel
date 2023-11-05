@@ -10,10 +10,12 @@ import CitiesPage from "../../pages/cities";
 import HotelsPage from "../../pages/hotels";
 import ActivityDetail from "../../pages/activities/activityDetail";
 import UserDetail from "../../pages/users/userDetail";
+import ClaimsPage from "../../pages/claims";
 
 const RouterList: RouteType[] = [
   { Page: AddActivity, path: "/login", pageType: "public" },
   { Page: UsersPage, path: "/users", pageType: "protected" },
+  { Page: ClaimsPage, path: "/claims", pageType: "protected" },
   { Page: ActivitiesPage, path: "/activities", pageType: "protected" },
   { Page: AirportsPage, path: "/airports", pageType: "protected" },
   { Page: FlightsPage, path: "/flights", pageType: "protected" },

@@ -36,6 +36,19 @@ const SideBar: React.FunctionComponent<SideBarProps> = () => {
       path: "/activities",
     },
 
+
+
+    {
+      subheader: "YETKİ İŞLEMLERİ",
+      id: "claims",
+      text: "claims",
+      icon: <SupervisedUserCircleRoundedIcon sx={menuIconsStyles} />,
+      path: "/claims",
+    },
+   
+
+
+
     {
       subheader: "ULAŞIM VE TURLAR",
       id: "airports",
