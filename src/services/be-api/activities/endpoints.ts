@@ -38,10 +38,6 @@ export const postAddActivity: Service<AddActivityData> = ({ data }) => {
   formData.append("Description", data.description);
   formData.append("Images", data.images!.toString());
 
-  // for (const image of data.Images) {
-  //   formData.append("Images", image, image.name);
-  // }
-
   return Request.post(POST_ADD_ACTIVITY, formData, {
     headers: {
       "Content-Type": "multipart/form-data",

@@ -1,45 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { FormControl, RadioGroup, TableBody } from "@mui/material";
+import {
+  FormControl,
+  RadioGroup,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 
 import TableSkeleton, { NotFound } from "./TableSkeleton";
 import TableHeadComponent from "./TableHead";
-import ExpandableTableRow from "./ExpandableTableRow";
-import TableRowMenu from "./TableMenu";
-import { TableBodyRowData, TableProps } from "./types";
-
-import { CustomTable, CustomTableCell, TableCustomPaper } from "./Table.styled";
+import { TableProps } from "./types";
+import { CustomTable, TableCustomPaper } from "./Table.styled";
 import TablePaginationComponent from "./TablePagination/TablePagination";
-import Typography from "../Typography/Typography";
-import { objectWithoutKeys } from "../../../utils/helpers";
-import { colors } from "../../../styles/color";
-
-const TableBodyCellCreator: React.FunctionComponent<{
-  data: TableBodyRowData;
-}> = ({ data }) => {
-  return (
-    <>
-      {Object.entries(data).map(([key, value]) => (
-        <CustomTableCell
-          key={key}
-          align="left"
-          padding={key === "icon" ? "checkbox" : "normal"}
-          sx={{ paddingLeft: key === "icon" ? "20px" : "none" }}
-        >
-          {typeof value === typeof String() ? (
-            <Typography
-              variant="body-small-medium"
-              color={colors.black.default}
-            >
-              {value}
-            </Typography>
-          ) : (
-            value
-          )}
-        </CustomTableCell>
-      ))}
-    </>
-  );
-};
 
 const Table: React.FunctionComponent<TableProps> = ({
   page,
@@ -116,41 +88,24 @@ const Table: React.FunctionComponent<TableProps> = ({
               isDetail={!!rowsData?.find((x) => x.detail)}
             />
             <TableBody>
-              {rowsData?.length > 0 &&
-                rowsData.map((row, index) => (
-                  <ExpandableTableRow
-                    id={row.selectableId || index}
-                    key={Math.random()}
-                    expandComponent={
-                      row.detail && (
-                        <CustomTableCell
-                          scope="row"
-                          colSpan={rowsData?.length + 100}
-                        >
-                          {row.detail}
-                        </CustomTableCell>
-                      )
-                    }
-                    onSelectRows={selectRows}
-                    selectedCheckBox={selectedRows}
-                    checkBox={checkBox}
-                    radioButton={radioButton}
-                    initialRadioButtonValue={initialRadioButtonValue}
-                    isRowColorful={row.isRowColorful}
-                    rowColor={row.rowColor}
-                  >
-                    <TableBodyCellCreator
-                      data={objectWithoutKeys(row, [
-                        "detail",
-                        "menu",
-                        "selectableId",
-                        "isRowColorful",
-                        "rowColor",
-                      ])}
-                    />
-                    {menu && <TableRowMenu menu={row.menu} />}
-                  </ExpandableTableRow>
-                ))}
+              {rowsData
+                ?.slice(page! * result!, page! * result! + result!)
+                .map((row: any) => {
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1}>
+                      {head.map((column) => {
+                        const value = row[column.field];
+                        return (
+                          <TableCell key={column.field} align={column.align}>
+                            {column && typeof value === "number"
+                              ? value
+                              : value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </CustomTable>
           {!isLoading && rowsData?.length === 0 && <NotFound />}

@@ -42,10 +42,4 @@ export const CustomInputLabel = styled(InputLabel)(() => ({
         },
     },
 }))
-export const CustomMenuItem = styled(MenuItem)({
-    // TODO: It will be updated according to the design
-    // backgroundColor: '',
-    // '&&.Mui-selected': '',
-    // '&&:hover': '',
-    // '&&.Mui-focusVisible': '',
-})
+

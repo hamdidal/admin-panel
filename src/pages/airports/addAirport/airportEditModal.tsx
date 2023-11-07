@@ -19,31 +19,32 @@ import { AllActivityModel } from "../../../services/be-api/activities/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import { AllTourModel } from "../../../services/be-api/tours/types";
 import { usePutTour } from "../../../utils/hooks/queries/Tours";
+import { AirportModel } from "../../../services/be-api/airports/types";
+import { usePutAirport } from "../../../utils/hooks/queries/Airports";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  tour: AllTourModel;
+  airport: AirportModel;
   onReload: () => void;
 }
 
-const TourEditModal: FC<IActivityCreateModalProps> = ({
+const AirportEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  tour,
+  airport,
   onReload,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
   >([]);
-  const [selectedCity, setSelectedCity] = useState(tour?.cityId);
+  const [selectedCity, setSelectedCity] = useState(1);
 
   const schema = yup
     .object()
     .shape({
       id: yup.number().required("Ad alanı zorunludur"),
       name: yup.string().required("Ad alanı zorunludur"),
-      title: yup.string().required("Başlık alanı zorunludur"),
       description: yup.string().required("Açıklama alanı zorunludur"),
       isActive: yup.boolean().required("Aktiflik durumu zorunludur"),
       cityId: yup.number().required("Şehir ID alanı zorunludur"),
@@ -64,30 +65,26 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      name: tour?.name,
-      title: tour?.title,
-      description: tour?.description,
-      id: tour?.id,
-      isActive: tour?.isActive,
-      cityId: tour?.cityId,
+      name: airport?.name,
+      description: airport?.description,
+      id: airport?.id,
+      isActive: airport?.isActive,
     },
   });
 
   useEffect(() => {
-    if (tour) {
+    if (airport) {
       reset({
-        name: tour.name,
-        title: tour.title,
-        description: tour.description,
-        id: tour.id,
-        isActive: tour.isActive,
-        cityId: tour?.cityId,
+        name: airport.name,
+        description: airport.description,
+        id: airport.id,
+        isActive: airport.isActive,
       });
-      setSelectedCity(tour?.cityId);
+      setSelectedCity(1);
     }
-  }, [tour, reset]);
+  }, [airport, reset]);
 
-  const { mutate } = usePutTour();
+  const { mutate } = usePutAirport();
 
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
@@ -111,7 +108,7 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
     reset();
   };
 
-  return tour ? (
+  return airport ? (
     <Modal
       open={show!}
       onClose={() => handleCancel()}
@@ -122,7 +119,7 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
       isAdd
     >
       <CustomContainer>
-        <Typography variant="h4-semibold">Turu Düzenle</Typography>
+        <Typography variant="h4-semibold">Havalimanını Düzenle</Typography>
 
         <form
           style={{
@@ -143,22 +140,6 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                   expand
                   label="İsim"
                   onError={errors.name as any}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="title"
-              control={control}
-              rules={{
-                required: true,
-                maxLength: 256,
-              }}
-              render={({ field }) => (
-                <TextField
-                  expand
-                  label="Başlık"
-                  onError={errors.title as any}
                   {...field}
                 />
               )}
@@ -187,10 +168,10 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                   width="100%"
                   {...field}
                   label="Şehir Seç"
-                  options={cityOptions}
                   isOptionEqual={(option: any, value: any) =>
                     option.label.toLowerCase() === value.toLowerCase()
                   }
+                  options={cityOptions}
                   selectedValue={
                     cityData?.data.filter(
                       (city: any) => city.id === selectedCity
@@ -209,7 +190,7 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                     control={
                       <MaterialUISwitch
                         sx={{ m: 1 }}
-                        defaultChecked={tour?.isActive}
+                        defaultChecked={airport?.isActive}
                       />
                     }
                     label={
@@ -217,7 +198,7 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                         ? watch("isActive")
                           ? "Aktif"
                           : "Pasif"
-                        : tour?.isActive
+                        : airport?.isActive
                         ? "Aktif"
                         : "Pasif"
                     }
@@ -235,4 +216,4 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
   );
 };
 
-export default TourEditModal;
+export default AirportEditModal;

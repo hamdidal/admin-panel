@@ -12,4 +12,19 @@ export interface Group {
   name: string;
 }
 
+export interface AddGroupVariables {
+  name: string;
+}
+export interface UpdateGroupData {
+  data: Group;
+}
+
+export interface AddGroupData {
+  data: AddGroupVariables;
+}
+
+export interface GroupIdVariables {
+  id: number;
+}
+
 export type GetAllGroupsServiceResponse = AllGroupModel;

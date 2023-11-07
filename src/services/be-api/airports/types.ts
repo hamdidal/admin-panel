@@ -38,5 +38,32 @@ export interface DeleteFlightVariables {
   airportFlightsId: number;
 }
 
+export interface AirportVariables {
+  id: number;
+}
+
+export interface AddAirportVariables {
+  name: string;
+  description: string;
+  isActive: boolean;
+  cityId: number;
+}
+
+export interface UpdateAirportVariables {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  cityId: number;
+}
+
+export interface AddAirportData {
+  data: AddAirportVariables;
+}
+
+export interface UpdateAirportData {
+  data: UpdateAirportVariables;
+}
+
 export type GetAllAirportsServiceResponse = AllAirportModel;
 export type GetAllFlightsServiceResponse = FlightsModel;

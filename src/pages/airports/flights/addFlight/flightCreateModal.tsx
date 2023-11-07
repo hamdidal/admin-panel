@@ -109,8 +109,6 @@ const FlightCreateModal: FC<IActivityCreateModalProps> = ({
     reset();
   };
 
-  console.log(dayjs(watch("travelTime").toString()).format("DD/MM/YYYY HH:mm"));
-
   return (
     <Modal
       open={show}

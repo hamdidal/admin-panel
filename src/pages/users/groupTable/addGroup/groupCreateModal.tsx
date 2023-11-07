@@ -2,14 +2,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { AddClaimValues } from "../types";
+import { usePostGroup } from "../../../../utils/hooks/queries/Groups";
+import Modal from "../../../../components/styledComponents/Modal/Modal";
 import { CustomContainer } from "./index.styled";
-import Form from "../../../components/styledComponents/Form/Form";
-import Modal from "../../../components/styledComponents/Modal/Modal";
-import { ptr } from "../../../utils/helpers";
-import { useCreateClaim } from "../../../utils/hooks/queries/Claims";
-import TextField from "../../../components/styledComponents/Input/TextField/TextField";
-import Typography from "../../../components/styledComponents/Typography/Typography";
+import Typography from "../../../../components/styledComponents/Typography/Typography";
+import { ptr } from "../../../../utils/helpers";
+import { Form } from "../../../../components/styledComponents/Form";
+import TextField from "../../../../components/styledComponents/Input/TextField/TextField";
+import { AddGroupValues } from "../../types";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
@@ -17,16 +17,16 @@ interface IActivityCreateModalProps {
   onReload: () => void;
 }
 
-const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
+const GroupCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   onReload,
 }) => {
-  const { mutate } = useCreateClaim();
+  const { mutate } = usePostGroup();
   const schema = yup
     .object()
     .shape({
-      name: yup.string().required("Yeki ismi zorunludur"),
+      name: yup.string().required("Ad alanı zorunludur"),
     })
     .required();
 
@@ -35,7 +35,7 @@ const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
     control,
     formState: { errors },
     reset,
-  } = useForm<AddClaimValues>({
+  } = useForm<AddGroupValues>({
     resolver: yupResolver(schema),
     defaultValues: {
       name: "",
@@ -43,7 +43,7 @@ const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
   });
 
   const handleAdd = handleSubmit(async (e) => {
-    mutate(e);
+    mutate({ data: e });
     setShow(!show);
     onReload();
   });
@@ -64,7 +64,7 @@ const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
       isAdd
     >
       <CustomContainer>
-        <Typography variant="h4-semibold">Yetki Ekle</Typography>
+        <Typography variant="h4-semibold">Grup Ekle</Typography>
         <form
           style={{
             width: `calc(100% - ${ptr(24)})`,
@@ -95,4 +95,4 @@ const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
   );
 };
 
-export default ClaimCreateModal;
+export default GroupCreateModal;

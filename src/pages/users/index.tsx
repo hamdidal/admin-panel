@@ -13,6 +13,7 @@ import { colors } from "../../styles/color";
 import { PermIdentity } from "@mui/icons-material";
 import Typography from "../../components/styledComponents/Typography/Typography";
 import { ptr } from "../../utils/helpers";
+import { Box } from "@mui/material";
 
 const UsersPage = () => {
   const {
@@ -27,6 +28,7 @@ const UsersPage = () => {
     data: groupsData,
     isSuccess: isGetAllGroupsSuccess,
     isLoading: isGetAllGroupsLoading,
+    refetch: groupRefetch,
   } = useGetAllGroups({
     queryKeys: {},
   });
@@ -92,16 +94,26 @@ const UsersPage = () => {
           </CustomBoxColumn>
         </CustomCardPaper>
       </CustomCardBox>
-      <UsersTable
-        data={usersData?.data}
-        isLoading={isGetAllUsersLoading}
-        isSuccess={isGetAllUsersSuccess}
-      />
-      <GroupTable
-        data={groupsData?.data}
-        isLoading={isGetAllGroupsLoading}
-        isSuccess={isGetAllGroupsSuccess}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "row",
+        }}
+      >
+        {" "}
+        <UsersTable
+          data={usersData?.data}
+          isLoading={isGetAllUsersLoading}
+          isSuccess={isGetAllUsersSuccess}
+        />
+        <GroupTable
+          data={groupsData?.data}
+          isLoading={isGetAllGroupsLoading}
+          isSuccess={isGetAllGroupsSuccess}
+          refetch={groupRefetch}
+        />
+      </Box>
     </DashboardLayout>
   );
 };

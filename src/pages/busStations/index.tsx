@@ -34,7 +34,7 @@ import _debounce from "lodash/debounce";
 import Modal from "../../components/styledComponents/Modal/Modal";
 
 export const busStationsHead: GridColDef[] = [
-  { field: "busStation", headerName: "TERMİNAL İSMİ", width: 130 },
+  { field: "name", headerName: "TERMİNAL İSMİ", width: 130 },
   { field: "description", headerName: "AÇIKLAMA", width: 130 },
   { field: "isActive", headerName: "AKTİF/PASİF", width: 130 },
   { field: "updateAndDelete", headerName: "", width: 130 },
@@ -148,7 +148,7 @@ const BusStationsPage = () => {
     stations &&
     stations.map((station) => {
       return {
-        airport: (
+        name: (
           <Box>
             <UserNameBox>
               <Typography

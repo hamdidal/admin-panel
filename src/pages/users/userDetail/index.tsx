@@ -22,10 +22,12 @@ import "react-slideshow-image/dist/styles.css";
 import { AllUserModel } from "../../../services/be-api/users/types";
 import { useGetUser } from "../../../utils/hooks/queries/Users";
 import Avatar from "../../../components/styledComponents/Avatar/Avatar";
+import useAuthStore from "../../../context/auth-store";
 
 const UserDetail = () => {
   const { id } = useParams();
   const [user, setUser] = useState<AllUserModel>();
+  const { user: currentUser } = useAuthStore();
 
   const { data, isSuccess, isLoading } = useGetUser({
     queryKeys: {
@@ -67,7 +69,9 @@ const UserDetail = () => {
                     color={colors.text.primaryTextLight}
                     variant="h6-medium"
                   >
-                    Kullanıcı İsmi :
+                    {currentUser.id === user?.id
+                      ? "Mevcut Kullanıcı İsmi:"
+                      : "Kullanıcı İsmi :"}
                   </Typography>
                   <Typography
                     color={colors.text.secondaryTextLight}

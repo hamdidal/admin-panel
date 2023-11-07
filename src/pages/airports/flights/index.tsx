@@ -113,9 +113,7 @@ const FlightsPage = () => {
     refetch();
   };
 
-  useEffect(() => {
-    console.log("refetch");
-  }, [refetch]);
+  useEffect(() => {}, [refetch]);
 
   const handleReload = async () => {
     await refetch();
@@ -154,7 +152,7 @@ const FlightsPage = () => {
           <Box>
             <UserNameBox>
               <Typography variant="body-normal-medium">
-                {flight.airPlaneCode}
+                {flight.airplaneCode}
               </Typography>
             </UserNameBox>
           </Box>

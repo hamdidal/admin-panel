@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Badge, Box, Button, Paper, TextField } from "@mui/material";
-import { ptr } from "../../utils/helpers";
-import { colors } from "../../styles/color";
+import { ptr } from "../../../utils/helpers";
+import { colors } from "../../../styles/color";
 
 export const CustomBadge = styled(Badge)((props) => ({
   display: "flex",
@@ -17,7 +17,6 @@ export const CustomCompaniesContainer = styled("div")({
   marginTop: ptr(44),
   marginRight: ptr(24),
   marginLeft: ptr(24),
-  width: "100%",
 });
 
 export const CustomTableDiv = styled("div")({
@@ -137,6 +136,29 @@ export const UserNameBox = styled(Box)({
   display: "flex",
   gap: ptr(10),
   justifyContent: "left",
+  alignContent: "center",
+  alignItems: "center",
+});
+
+export const FilterSection = styled(Box)({
+  boxShadow: " 0px 2px 10px rgba(76, 78, 100, 0.22)",
+  marginBottom: ptr(12),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  justifyContent: "space-around",
+  height: ptr(90),
+  gap: ptr(16),
+  padding: ptr(20),
+  background: colors.white.default,
+});
+
+export const FilterGroup = styled(Box)({
+  display: "flex",
+  gap: ptr(24),
+  width: "100%",
+  flexDirection: "row",
+  justifyContent: "space-between",
   alignContent: "center",
   alignItems: "center",
 });

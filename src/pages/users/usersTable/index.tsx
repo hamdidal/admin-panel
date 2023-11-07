@@ -9,6 +9,7 @@ import Typography from "../../../components/styledComponents/Typography/Typograp
 import { colors } from "../../../styles/color";
 import Table from "../../../components/styledComponents/Table";
 import { ptr } from "../../../utils/helpers";
+import { DataGrid } from "@mui/x-data-grid";
 
 import { DataProps } from "../types";
 import {
@@ -17,21 +18,25 @@ import {
   UserNameBox,
 } from "../index.styled";
 import Avatar from "../../../components/styledComponents/Avatar/Avatar";
+import { FilterGroup, FilterSection } from "../groupTable/index.styled";
+import SearchInput from "../../../components/styledComponents/Input/SearchInput/SearchInput";
+import Fuse from "fuse.js";
+import _debounce from "lodash/debounce";
 
 export const usersHead: GridColDef[] = [
-  { field: "user", headerName: "KULLANICI", width: 130 },
+  { field: "name", headerName: "KULLANICI", width: 130 },
   { field: "telephone", headerName: "TELEFON", width: 130 },
   { field: "role", headerName: "ROL", width: 130 },
 ];
 
 const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
   const [users, setUsers] = useState<any[]>([]);
+  const [filterText, setFilterText] = useState("");
 
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(0);
   const [rowPerPage, setRowPerPage] = useState(10);
-  // Filter State
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -57,16 +62,34 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
     setCurrentPage(newPage);
   };
 
-  // const handleSelectDate = (sDate: string, eDate: string) => {
-  //   setStartDate(sDate);
-  //   setEndDate(eDate);
-  // };
+  const filterData = () => {
+    if (users?.length === 0 || !filterText) {
+      return setUsers(data);
+    }
+    const fuse = new Fuse(users, {
+      keys: Object.keys(users[0]),
+    });
+
+    const results = fuse.search(filterText);
+    return setUsers(results.map((result) => result.item));
+  };
+
+  const handleFilter = (event: any): void => {
+    _debounce(() => {
+      setFilterText(event);
+    }, 500)();
+  };
+
+  useEffect(() => {
+    filterData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterText]);
 
   const rowData: TableBodyRowData[] =
     users &&
     users.map((user) => {
       return {
-        user: (
+        name: (
           <Box>
             <UserNameBox>
               <Typography>
@@ -112,9 +135,18 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
 
   return (
     <CustomCompaniesContainer>
+      <FilterSection>
+        <FilterGroup>
+          <SearchInput
+            value={filterText}
+            onChange={(e) => handleFilter(e)}
+            placeholder="Kullanıcı Ara"
+          />
+        </FilterGroup>
+      </FilterSection>
       <CustomTableDiv>
         <Table
-          count={users.length}
+          count={users?.length}
           isLoading={isLoading}
           onRowsPerPageChange={handleChangeRowsPerPage}
           onPageChange={onPageChange}
@@ -124,6 +156,16 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
           isClickable={false}
           page={currentPage}
         ></Table>
+
+        {/* <DataGrid
+          style={{ width: "100%" }}
+          rows={users ? users : []}
+          columns={usersHead}
+          disableRowSelectionOnClick
+          paginationMode="client"
+          aria-label="Deneme"
+          aria-labelledby="Deneme"
+        /> */}
       </CustomTableDiv>
     </CustomCompaniesContainer>
   );

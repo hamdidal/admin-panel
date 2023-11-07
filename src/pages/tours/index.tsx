@@ -122,7 +122,7 @@ const ToursPage = () => {
     tours &&
     tours?.map((tour) => {
       return {
-        airport: (
+        name: (
           <Box>
             <UserNameBox>
               <Typography

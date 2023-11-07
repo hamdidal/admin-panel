@@ -2,10 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import {
-  useGetActivity,
-  usePutActivity,
-} from "../../../utils/hooks/queries/Activities";
+import { usePostActivity } from "../../../utils/hooks/queries/Activities";
 import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
@@ -14,85 +11,62 @@ import { ptr } from "../../../utils/helpers";
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
 import { useGetAllCities } from "../../../utils/hooks/queries/Cities";
 import AutocompleteContainer from "../../../components/styledComponents/Input/AutoComplete/Autocomplete";
-import Spinner from "../../../components/Spinner";
-import { AllActivityModel } from "../../../services/be-api/activities/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
-import { AllTourModel } from "../../../services/be-api/tours/types";
-import { usePutTour } from "../../../utils/hooks/queries/Tours";
+import { usePostTour } from "../../../utils/hooks/queries/Tours";
+import { AddAirportValues } from "../types";
+import { usePostAirport } from "../../../utils/hooks/queries/Airports";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  tour: AllTourModel;
   onReload: () => void;
 }
 
-const TourEditModal: FC<IActivityCreateModalProps> = ({
+const AirportCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  tour,
   onReload,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
   >([]);
-  const [selectedCity, setSelectedCity] = useState(tour?.cityId);
+  const [selectedCity, setSelectedCity] = useState(1);
 
+  const { data: cityData, isSuccess: citySuccess } = useGetAllCities({
+    queryKeys: {},
+  });
+
+  const { mutate, isSuccess } = usePostAirport();
   const schema = yup
     .object()
     .shape({
-      id: yup.number().required("Ad alanı zorunludur"),
       name: yup.string().required("Ad alanı zorunludur"),
-      title: yup.string().required("Başlık alanı zorunludur"),
       description: yup.string().required("Açıklama alanı zorunludur"),
       isActive: yup.boolean().required("Aktiflik durumu zorunludur"),
       cityId: yup.number().required("Şehir ID alanı zorunludur"),
     })
     .required();
 
-  const { data: cityData, isSuccess: citySuccess } = useGetAllCities({
-    queryKeys: {},
-  });
-
   const {
-    control,
     handleSubmit,
-    reset,
+    control,
     formState: { errors },
     watch,
-  } = useForm({
-    mode: "onChange",
+    reset,
+  } = useForm<AddAirportValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: tour?.name,
-      title: tour?.title,
-      description: tour?.description,
-      id: tour?.id,
-      isActive: tour?.isActive,
-      cityId: tour?.cityId,
+      name: "",
+      description: "",
+      isActive: true,
+      cityId: 1,
     },
   });
 
-  useEffect(() => {
-    if (tour) {
-      reset({
-        name: tour.name,
-        title: tour.title,
-        description: tour.description,
-        id: tour.id,
-        isActive: tour.isActive,
-        cityId: tour?.cityId,
-      });
-      setSelectedCity(tour?.cityId);
-    }
-  }, [tour, reset]);
-
-  const { mutate } = usePutTour();
-
-  const handleUpdate = handleSubmit(async (e) => {
+  const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
+    onReload();
   });
 
   useEffect(() => {
@@ -111,19 +85,18 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
     reset();
   };
 
-  return tour ? (
+  return (
     <Modal
-      open={show!}
+      open={show}
       onClose={() => handleCancel()}
-      onConfirm={() => handleUpdate()}
+      onConfirm={() => handleAdd()}
       header={undefined}
       subheader={undefined}
       style={{ width: ptr(600), height: ptr(600) }}
       isAdd
     >
       <CustomContainer>
-        <Typography variant="h4-semibold">Turu Düzenle</Typography>
-
+        <Typography variant="h4-semibold">Tur Ekle</Typography>
         <form
           style={{
             width: `calc(100% - ${ptr(24)})`,
@@ -142,23 +115,7 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                 <TextField
                   expand
                   label="İsim"
-                  onError={errors.name as any}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="title"
-              control={control}
-              rules={{
-                required: true,
-                maxLength: 256,
-              }}
-              render={({ field }) => (
-                <TextField
-                  expand
-                  label="Başlık"
-                  onError={errors.title as any}
+                  onError={errors.name}
                   {...field}
                 />
               )}
@@ -172,10 +129,10 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
               }}
               render={({ field }) => (
                 <TextField
-                  {...field}
                   expand
                   label="Açıklama"
-                  onError={errors.description as any}
+                  onError={errors.description}
+                  {...field}
                 />
               )}
             />
@@ -188,13 +145,10 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                   {...field}
                   label="Şehir Seç"
                   options={cityOptions}
-                  isOptionEqual={(option: any, value: any) =>
-                    option.label.toLowerCase() === value.toLowerCase()
-                  }
                   selectedValue={
                     cityData?.data.filter(
                       (city: any) => city.id === selectedCity
-                    )[0]?.name
+                    )[0].name
                   }
                 />
               )}
@@ -206,21 +160,8 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
                 rules={{}}
                 render={({ field }) => (
                   <FormControlLabel
-                    control={
-                      <MaterialUISwitch
-                        sx={{ m: 1 }}
-                        defaultChecked={tour?.isActive}
-                      />
-                    }
-                    label={
-                      watch("isActive")
-                        ? watch("isActive")
-                          ? "Aktif"
-                          : "Pasif"
-                        : tour?.isActive
-                        ? "Aktif"
-                        : "Pasif"
-                    }
+                    control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />}
+                    label={watch("isActive") ? "Aktif" : "Pasif"}
                     {...field}
                   />
                 )}
@@ -230,9 +171,7 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
         </form>
       </CustomContainer>
     </Modal>
-  ) : (
-    <Spinner />
   );
 };
 
-export default TourEditModal;
+export default AirportCreateModal;

@@ -19,8 +19,6 @@ export const getAllHotels: Service<GetHotelsVariables> = (querykeys) => {
 };
 
 export const postAddHotel: Service<AddHotelData> = (data) => {
-  console.log(data);
-
   const formData = new FormData();
   formData.append("Name", data.data.name);
   formData.append("IsActive", data.data.isActive.toString());
@@ -38,6 +36,9 @@ export const putHotel: Service<UpdateHotelData> = ({ data }) => {
   return Request.put(PUT_UPDATE_HOTEL, data, {});
 };
 
-export const deleteHotel: Service<DeleteHotelVariables> = ({ hotelId, cityId }) => {
+export const deleteHotel: Service<DeleteHotelVariables> = ({
+  hotelId,
+  cityId,
+}) => {
   return Request.delete(DELETE_CITY_HOTEL(hotelId, cityId), {});
 };

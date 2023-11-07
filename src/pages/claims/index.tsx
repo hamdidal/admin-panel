@@ -32,8 +32,8 @@ import SearchInput from "../../components/styledComponents/Input/SearchInput/Sea
 import Fuse from "fuse.js";
 
 export const claimsHead: GridColDef[] = [
-  { field: "claims", headerName: "YETKİ İSMİ", width: 130 },
-  { field: "updateAndDelete", headerName: "Güncelle/Sil", width: 130 },
+  { field: "name", headerName: "YETKİ İSMİ", width: 130 },
+  { field: "updateAndDelete", headerName: "", width: 130 },
 ];
 
 const ClaimsPage = () => {
@@ -78,9 +78,7 @@ const ClaimsPage = () => {
     refetch();
   };
 
-  useEffect(() => {
-    console.log("refetch");
-  }, [refetch]);
+  useEffect(() => {}, [refetch]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -122,7 +120,7 @@ const ClaimsPage = () => {
     claims &&
     claims.map((claim) => {
       return {
-        airport: (
+        name: (
           <Box>
             <UserNameBox>
               <Typography
@@ -134,7 +132,7 @@ const ClaimsPage = () => {
             </UserNameBox>
           </Box>
         ),
-     
+
         updateAndDelete: (
           <Box
             sx={{

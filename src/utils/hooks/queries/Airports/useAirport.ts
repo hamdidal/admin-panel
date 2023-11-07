@@ -2,11 +2,14 @@ import { useBaseMutation, useBaseQuery } from "../_Base";
 import { Mutation, Query } from "../types";
 import airportsServices from "../../../../services/be-api/airports";
 import {
+  AddAirportData,
   AddFlightData,
+  AirportVariables,
   DeleteFlightVariables,
   FlightsVariables,
   GetAllAirportsServiceResponse,
   GetAllFlightsServiceResponse,
+  UpdateAirportData,
 } from "../../../../services/be-api/airports/types";
 
 export const useGetAllAirports: Query<any, GetAllAirportsServiceResponse> = (
@@ -77,6 +80,63 @@ export const useDeleteFlight: Mutation<
 > = () =>
   useBaseMutation({
     service: airportsServices.deleteFlight,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
+
+export const usePostAirport: Mutation<
+  AddAirportData,
+  GetAllAirportsServiceResponse
+> = () =>
+  useBaseMutation({
+    service: airportsServices.postAddAirport,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
+
+export const usePutAirport: Mutation<
+  UpdateAirportData,
+  GetAllAirportsServiceResponse
+> = () =>
+  useBaseMutation({
+    service: airportsServices.putAirport,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
+
+export const useDeleteAirport: Mutation<
+  AirportVariables,
+  GetAllAirportsServiceResponse
+> = () =>
+  useBaseMutation({
+    service: airportsServices.deleteAirport,
     onSuccess: {
       messageDisplay: true,
       message: "Başarılı bir şekilde giriş yapıldı.",

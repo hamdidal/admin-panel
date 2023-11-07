@@ -1,37 +1,35 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { Group } from "../../../../services/be-api/groups/types";
+import { usePutGroup } from "../../../../utils/hooks/queries/Groups";
 import { CustomContainer } from "./index.styled";
-import Form from "../../../components/styledComponents/Form/Form";
-import TextField from "../../../components/styledComponents/Input/TextField/TextField";
-import Modal from "../../../components/styledComponents/Modal/Modal";
-import { ptr } from "../../../utils/helpers";
-import Spinner from "../../../components/Spinner";
-import { AllClaimModel } from "../../../services/be-api/claims/types";
-import Typography from "../../../components/styledComponents/Typography/Typography";
-import { usePutClaim } from "../../../utils/hooks/queries/Claims";
+import Modal from "../../../../components/styledComponents/Modal/Modal";
+import { ptr } from "../../../../utils/helpers";
+import Typography from "../../../../components/styledComponents/Typography/Typography";
+import Form from "../../../../components/styledComponents/Form/Form";
+import TextField from "../../../../components/styledComponents/Input/TextField/TextField";
+import Spinner from "../../../../components/Spinner";
 
-interface IClaimUpdateModalProps {
+interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  claim: AllClaimModel;
+  group: Group;
   onReload: () => void;
 }
 
-const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
+const GroupEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  claim,
+  group,
   onReload,
 }) => {
-  const [selectedClaim, setSelectedClaim] = useState(claim?.id);
-
   const schema = yup
     .object()
     .shape({
-      id: yup.number().required("Lütfen düzenlenecek kaydı seçin."),
-      name: yup.string().required("Yetki ismi zorunludur."),
+      id: yup.number().required("Id alanı zorunludur"),
+      name: yup.string().required("Ad alanı zorunludur"),
     })
     .required();
 
@@ -40,30 +38,28 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
     handleSubmit,
     reset,
     formState: { errors },
-    watch,
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      id: claim?.id,
-      name: claim?.name,
+      name: group?.name,
+      id: group?.id,
     },
   });
 
   useEffect(() => {
-    if (claim) {
+    if (group) {
       reset({
-        id: claim.id,
-        name: claim.name,
+        name: group.name,
+        id: group.id,
       });
-      setSelectedClaim(claim?.id);
     }
-  }, [claim, reset]);
+  }, [group, reset]);
 
-  const { mutate } = usePutClaim();
+  const { mutate } = usePutGroup();
 
   const handleUpdate = handleSubmit(async (e) => {
-    mutate(e);
+    mutate({ data: e });
     onReload();
     setShow(!show);
   });
@@ -73,7 +69,7 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
     reset();
   };
 
-  return claim ? (
+  return group ? (
     <Modal
       open={show!}
       onClose={() => handleCancel()}
@@ -84,7 +80,7 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
       isAdd
     >
       <CustomContainer>
-        <Typography variant="h4-semibold">Yetki Düzenle</Typography>
+        <Typography variant="h4-semibold">Grubu Düzenle</Typography>
 
         <form
           style={{
@@ -109,8 +105,6 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
                 />
               )}
             />
-
-         
           </Form>
         </form>
       </CustomContainer>
@@ -120,4 +114,4 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
   );
 };
 
-export default ClaimEditModal;
+export default GroupEditModal;

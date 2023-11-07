@@ -17,29 +17,43 @@ import Typography from "../../components/styledComponents/Typography/Typography"
 import Table from "../../components/styledComponents/Table";
 import { ptr } from "../../utils/helpers";
 import DashboardLayout from "../../layouts/Dashboard/DashboardLayout";
-import { useGetAllAirports } from "../../utils/hooks/queries/Airports";
+import {
+  useDeleteAirport,
+  useGetAllAirports,
+} from "../../utils/hooks/queries/Airports";
 import CheckBox from "../../components/styledComponents/Buttons/Checkbox/Checkbox";
 import Button from "../../components/styledComponents/Buttons/Button/Button";
-import { Add } from "@mui/icons-material";
+import { Add, Delete, Update } from "@mui/icons-material";
 import SearchInput from "../../components/styledComponents/Input/SearchInput/SearchInput";
 import Fuse from "fuse.js";
 import _debounce from "lodash/debounce";
+import AirportCreateModal from "./addAirport/airportCreateModal";
+import AirportEditModal from "./addAirport/airportEditModal";
+import Modal from "../../components/styledComponents/Modal/Modal";
 
 export const airportsHead: GridColDef[] = [
   { field: "airport", headerName: "HAVALİMANI İSMİ", width: 130 },
   { field: "description", headerName: "AÇIKLAMA", width: 130 },
   { field: "isActive", headerName: "AKTİF/PASİF", width: 130 },
+  { field: "updateAndDelete", headerName: "", width: 130 },
 ];
 
 const AirportsPage = () => {
-  const { data, isSuccess, isLoading } = useGetAllAirports({
-    queryKeys: {},
-  });
   const [filterText, setFilterText] = useState("");
   const [airports, setAirports] = useState<any[]>([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [rowPerPage, setRowPerPage] = useState(10);
+  const [show, setShow] = useState({ mode: "none" } as {
+    mode: "none" | "create" | "edit";
+  });
+  const [open, setOpen] = useState(false);
+  const [selectedAirport, setSelectedAirport] = useState(0);
+
+  const { data, isSuccess, isLoading, refetch } = useGetAllAirports({
+    queryKeys: {},
+  });
+  const { mutate } = useDeleteAirport();
 
   useEffect(() => {
     if (isSuccess && data?.data) {
@@ -90,10 +104,17 @@ const AirportsPage = () => {
     setCurrentPage(newPage);
   };
 
-  // const handleSelectDate = (sDate: string, eDate: string) => {
-  //   setStartDate(sDate);
-  //   setEndDate(eDate);
-  // };
+  const handleToggle = () => {
+    setOpen(!open);
+  };
+  const handleModalConfirm = (id: number) => {
+    mutate({ id });
+    setOpen(!open);
+  };
+
+  const handleReload = async () => {
+    await refetch();
+  };
 
   const rowData: TableBodyRowData[] =
     airports &&
@@ -123,6 +144,38 @@ const AirportsPage = () => {
             <CheckBox checked={airport?.isActive} />
           </Box>
         ),
+        updateAndDelete: (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Button
+              size="small"
+              onClick={() => {
+                setShow({ mode: "edit" });
+                setSelectedAirport(airport.id);
+              }}
+              variant="text"
+            >
+              <Update />
+            </Button>
+
+            <Button
+              onClick={() => {
+                handleToggle();
+                setSelectedAirport(airport.id);
+              }}
+              size="small"
+              variant="text"
+              colorsx="red"
+            >
+              <Delete />
+            </Button>
+          </Box>
+        ),
       };
     });
 
@@ -142,13 +195,26 @@ const AirportsPage = () => {
           />
           <Button
             startIcon={<Add />}
-            onClick={() => null}
+            onClick={() => setShow({ mode: "create" })}
             variant="outlined"
             color={"secondary"}
             padding={ptr(16)}
           >
             EKLE
           </Button>
+          <AirportCreateModal
+            setShow={() => setShow({ mode: "none" })}
+            show={show.mode === "create"}
+            onReload={handleReload}
+          />
+          <AirportEditModal
+            setShow={() => setShow({ mode: "none" })}
+            show={show.mode === "edit"}
+            onReload={handleReload}
+            airport={
+              airports?.filter((data: any) => data.id === selectedAirport)[0]
+            }
+          />
         </FilterGroup>
       </FilterSection>
       <CustomCompaniesContainer>
@@ -166,6 +232,14 @@ const AirportsPage = () => {
           ></Table>
         </CustomTableDiv>
       </CustomCompaniesContainer>
+      <Modal
+        type="delete"
+        open={open}
+        onClose={() => handleToggle()}
+        onConfirm={() => handleModalConfirm(selectedAirport!)}
+        header={"Havalimanını Silmek Üzeresiniz"}
+        subheader={"Yine de işleme devam etmek istiyor musunuz?"}
+      ></Modal>
     </DashboardLayout>
   );
 };

@@ -32,7 +32,7 @@ import SearchInput from "../../components/styledComponents/Input/SearchInput/Sea
 import Fuse from "fuse.js";
 
 export const airportsHead: GridColDef[] = [
-  { field: "cities", headerName: "ŞEHİR İSMİ", width: 130 },
+  { field: "name", headerName: "ŞEHİR İSMİ", width: 130 },
   { field: "isActive", headerName: "AKTİF/PASİF", width: 130 },
   { field: "updateAndDelete", headerName: "", width: 130 },
 ];
@@ -79,9 +79,7 @@ const CitiesPage = () => {
     refetch();
   };
 
-  useEffect(() => {
-    console.log("refetch");
-  }, [refetch]);
+  useEffect(() => {}, [refetch]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -123,7 +121,7 @@ const CitiesPage = () => {
     cities &&
     cities.map((city) => {
       return {
-        airport: (
+        name: (
           <Box>
             <UserNameBox>
               <Typography

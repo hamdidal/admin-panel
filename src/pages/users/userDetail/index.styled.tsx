@@ -14,19 +14,20 @@ export const CustomBadge = styled(Badge)((props) => ({
 
 export const CustomCompanyProfileContainer = styled("div")({
   display: "flex",
-  justifyContent: "flex-start",
+  justifyContent: "center",
   marginTop: ptr(44),
   marginRight: ptr(24),
   marginLeft: ptr(24),
   gap: ptr(24),
   width: "100%",
+  padding: ptr(24),
 });
 
 export const CustomCompanyProfileTableDiv = styled("div")({
   boxShadow: " 0px 2px 10px rgba(76, 78, 100, 0.22)",
   marginBottom: ptr(24),
   height: "fit-content",
-  width: "100%",
+  width: "50%",
 });
 
 export const CustomCompanyProfileBox = styled(Box)({

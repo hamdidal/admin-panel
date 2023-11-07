@@ -20,7 +20,6 @@ const TablePaginationComponent: React.FunctionComponent<
         labelRowsPerPage="Sayfa başı satır:"
         rowsPerPage={result!}
         showFirstButton={page !== 0 && count % result! < result!}
-        showLastButton
       ></TablePagination>
     </ThemeProvider>
   );

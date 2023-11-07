@@ -22,4 +22,5 @@ export type AutocompleteProps = {
     selectedValue?: string | number | null
     getOptionDisabled?: UseAutocompleteProps<unknown, boolean | undefined, boolean | undefined, boolean | undefined>
     disabled?: boolean
+    isOptionEqual?: any
 }

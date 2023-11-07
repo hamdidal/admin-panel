@@ -31,7 +31,7 @@ import _debounce from "lodash/debounce";
 import Modal from "../../components/styledComponents/Modal/Modal";
 
 export const busStationsHead: GridColDef[] = [
-  { field: "hotels", headerName: "HOTEL İSMİ", width: 130 },
+  { field: "name", headerName: "HOTEL İSMİ", width: 130 },
   { field: "description", headerName: "AÇIKLAMA", width: 130 },
   { field: "isActive", headerName: "AKTİF/PASİF", width: 130 },
   { field: "updateAndDelete", headerName: "", width: 130 },
@@ -101,8 +101,6 @@ const HotelsPage = () => {
     setOpen(!open);
   };
   const handleModalConfirm = (hotelId: number) => {
-    console.log(hotelId, "hh");
-
     mutate({
       hotelId: hotelId,
       cityId: selectedCity,
@@ -112,9 +110,7 @@ const HotelsPage = () => {
     refetch();
   };
 
-  useEffect(() => {
-    console.log("refetch");
-  }, [refetch]);
+  useEffect(() => {}, [refetch]);
 
   const handleReload = async () => {
     await refetch();
@@ -149,7 +145,7 @@ const HotelsPage = () => {
     hotels &&
     hotels.map((hotel) => {
       return {
-        airport: (
+        name: (
           <Box>
             <UserNameBox>
               <Typography

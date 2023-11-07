@@ -23,7 +23,7 @@ export type TableProps = {
     onPageChange?: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void
     pagination?: boolean
     initialRadioButtonValue?: string | number
-    isClickable: boolean
+    isClickable?: boolean
     count?: number
     result?: number
     page?: number
