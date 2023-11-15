@@ -10,20 +10,19 @@ import { ptr } from "../../../utils/helpers";
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
 import Spinner from "../../../components/Spinner";
 import Typography from "../../../components/styledComponents/Typography/Typography";
-import { usePutHotel } from "../../../utils/hooks/queries/Hotels";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   hotel: any;
-  onReload: () => void;
+  mutate: any;
 }
 
 const HotelEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   hotel,
-  onReload,
+  mutate,
 }) => {
   const [selectedCity, setSelectedCity] = useState(hotel?.id);
 
@@ -66,11 +65,8 @@ const HotelEditModal: FC<IActivityCreateModalProps> = ({
     }
   }, [hotel, reset]);
 
-  const { mutate, isSuccess } = usePutHotel();
-
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
   });
 

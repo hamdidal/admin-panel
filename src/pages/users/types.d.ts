@@ -6,5 +6,15 @@ export interface DataProps {
 }
 
 export interface AddGroupValues {
-  name: string
+  name: string;
+}
+
+export interface AddGroupClaimValues {
+  claimId: number[];
+  groupId: number;
+}
+
+export interface AddGroupUsersValues {
+  userId: number[];
+  groupId: number;
 }

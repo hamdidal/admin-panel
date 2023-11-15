@@ -1,6 +1,7 @@
 import { RequestParams, Service } from "../../types";
 import { Request } from "../../_base";
 import {
+  AddActivitiesImageVariables,
   AddActivityData,
   GetActivityByIdVariables,
   GetAllActivitiesServiceResponse,
@@ -8,9 +9,11 @@ import {
 } from "./types";
 import {
   DELETE_ACTIVITY,
+  DELETE_ACTIVITY_IMAGE,
   GET_ACTIVITY_ALL,
   GET_ACTIVITY_BY_ID,
   POST_ADD_ACTIVITY,
+  POST_ADD_ACTIVITY_IMAGE,
   PUT_UPDATE_ACTIVITY,
 } from "./constants";
 
@@ -45,10 +48,34 @@ export const postAddActivity: Service<AddActivityData> = ({ data }) => {
   });
 };
 
+export const postAddActivityImages: Service<AddActivitiesImageVariables> = ({
+  image,
+  id,
+}) => {
+  const formData = new FormData();
+
+  for (const imageFile of image) {
+    formData.append("Images", imageFile, imageFile.name);
+  }
+  formData.append("ActivitieId", id.toString());
+
+  return Request.post(POST_ADD_ACTIVITY_IMAGE, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 export const putActivity: Service<UpdateActivityData> = ({ data }) => {
   return Request.put(PUT_UPDATE_ACTIVITY, data, {});
 };
 
 export const deleteActivity: Service<GetActivityByIdVariables> = ({ id }) => {
   return Request.delete(DELETE_ACTIVITY(id), {});
+};
+
+export const deleteActivityImage: Service<GetActivityByIdVariables> = ({
+  id,
+}) => {
+  return Request.delete(DELETE_ACTIVITY_IMAGE(id), {});
 };

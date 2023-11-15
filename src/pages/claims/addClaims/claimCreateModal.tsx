@@ -7,22 +7,20 @@ import { CustomContainer } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
 import Modal from "../../../components/styledComponents/Modal/Modal";
 import { ptr } from "../../../utils/helpers";
-import { useCreateClaim } from "../../../utils/hooks/queries/Claims";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
-  const { mutate } = useCreateClaim();
   const schema = yup
     .object()
     .shape({
@@ -45,7 +43,6 @@ const ClaimCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate(e);
     setShow(!show);
-    onReload();
   });
 
   const handleCancel = () => {

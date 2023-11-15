@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box } from "@mui/material";
@@ -19,6 +19,8 @@ import { ptr } from "../../utils/helpers";
 import {
   useDeleteActivity,
   useGetAllActivities,
+  usePostActivity,
+  usePutActivity,
 } from "../../utils/hooks/queries/Activities";
 import DashboardLayout from "../../layouts/Dashboard/DashboardLayout";
 import Button from "../../components/styledComponents/Buttons/Button/Button";
@@ -30,6 +32,7 @@ import SearchInput from "../../components/styledComponents/Input/SearchInput/Sea
 import CheckBox from "../../components/styledComponents/Buttons/Checkbox/Checkbox";
 import ActivityEditModal from "./addActivity/activityEditModal";
 import Modal from "../../components/styledComponents/Modal/Modal";
+import Spinner from "../../components/Spinner";
 
 export const activitiesHead: GridColDef[] = [
   { field: "activity", headerName: "AKTİVİTE İSMİ", width: 130 },
@@ -54,18 +57,16 @@ const ActivitiesPage = () => {
   });
   const [open, setOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(0);
-  const { mutate } = useDeleteActivity();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } =
+    useDeleteActivity();
+  const { mutate: postMutate, isSuccess: postSuccess } = usePostActivity();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutActivity();
 
   useEffect(() => {
     if (isSuccess && data?.data) {
       setActivities(data.data);
     }
   }, [isSuccess, data?.data]);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.data]);
 
   const handleFilter = (event: any): void => {
     _debounce(() => {
@@ -77,7 +78,7 @@ const ActivitiesPage = () => {
     setOpen(!open);
   };
   const handleModalConfirm = (id: number) => {
-    mutate({ id });
+    deleteMutate({ id });
     setOpen(!open);
   };
 
@@ -117,9 +118,16 @@ const ActivitiesPage = () => {
     setCurrentPage(newPage);
   };
 
-  const handleReload = async () => {
-    await refetch();
-  };
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess || postSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess, postSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
 
   const rowData: TableBodyRowData[] =
     activities &&
@@ -202,59 +210,65 @@ const ActivitiesPage = () => {
 
   return (
     <DashboardLayout>
-      <CustomCardBox>
-        <CustomBoxColumn>
-          <Typography variant="h4-semibold">Aktiviteler</Typography>
-        </CustomBoxColumn>
-      </CustomCardBox>
-      <FilterSection>
-        <FilterGroup>
-          <SearchInput
-            value={filterText}
-            onChange={(e) => handleFilter(e)}
-            placeholder="Aktivite Ara"
-          />
-          <Button
-            startIcon={<Add />}
-            onClick={() => setShow({ mode: "create" })}
-            variant="outlined"
-            color={"secondary"}
-            padding={ptr(16)}
-          >
-            EKLE
-          </Button>
-          <ActivityCreateModal
-            setShow={() => setShow({ mode: "none" })}
-            show={show.mode === "create"}
-            onReload={handleReload}
-          />
-          <ActivityEditModal
-            setShow={() => setShow({ mode: "none" })}
-            show={show.mode === "edit"}
-            onReload={handleReload}
-            activity={
-              data?.data.filter(
-                (data: any) => data.id === selectedActivityId
-              )[0]
-            }
-          />
-        </FilterGroup>
-      </FilterSection>
-      <CustomCompaniesContainer>
-        <CustomTableDiv>
-          <Table
-            count={activities?.length}
-            isLoading={isLoading}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            onPageChange={onPageChange}
-            head={activitiesHead}
-            result={rowPerPage}
-            rowsData={rowData}
-            isClickable={false}
-            page={currentPage}
-          ></Table>
-        </CustomTableDiv>
-      </CustomCompaniesContainer>
+      {activities ? (
+        <>
+          <CustomCardBox>
+            <CustomBoxColumn>
+              <Typography variant="h4-semibold">Aktiviteler</Typography>
+            </CustomBoxColumn>
+          </CustomCardBox>
+          <FilterSection>
+            <FilterGroup>
+              <SearchInput
+                value={filterText}
+                onChange={(e) => handleFilter(e)}
+                placeholder="Aktivite Ara"
+              />
+              <Button
+                startIcon={<Add />}
+                onClick={() => setShow({ mode: "create" })}
+                variant="outlined"
+                color={"secondary"}
+                padding={ptr(16)}
+              >
+                EKLE
+              </Button>
+              <ActivityCreateModal
+                setShow={() => setShow({ mode: "none" })}
+                show={show.mode === "create"}
+                mutate={postMutate}
+              />
+              <ActivityEditModal
+                setShow={() => setShow({ mode: "none" })}
+                show={show.mode === "edit"}
+                mutate={editMutate}
+                activity={
+                  data?.data.filter(
+                    (data: any) => data.id === selectedActivityId
+                  )[0]
+                }
+              />
+            </FilterGroup>
+          </FilterSection>
+          <CustomCompaniesContainer>
+            <CustomTableDiv>
+              <Table
+                count={activities?.length}
+                isLoading={isLoading}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                onPageChange={onPageChange}
+                head={activitiesHead}
+                result={rowPerPage}
+                rowsData={rowData}
+                isClickable={false}
+                page={currentPage}
+              ></Table>
+            </CustomTableDiv>
+          </CustomCompaniesContainer>
+        </>
+      ) : (
+        <Spinner open={isLoading} />
+      )}
       <Modal
         type="delete"
         open={open}

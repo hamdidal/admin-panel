@@ -1,7 +1,8 @@
-import { FC } from 'react'
+import { FC } from "react";
 
 export type RouteType = {
-    path: string
-    Page: FC
-    pageType: 'public' | 'protected'
-}
+  path: string;
+  Page: FC;
+  pageType: "public" | "protected";
+  visible?: string;
+};

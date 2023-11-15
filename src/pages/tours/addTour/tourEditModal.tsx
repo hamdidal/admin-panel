@@ -2,10 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import {
-  useGetActivity,
-  usePutActivity,
-} from "../../../utils/hooks/queries/Activities";
 import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
@@ -15,23 +11,21 @@ import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
 import { useGetAllCities } from "../../../utils/hooks/queries/Cities";
 import AutocompleteContainer from "../../../components/styledComponents/Input/AutoComplete/Autocomplete";
 import Spinner from "../../../components/Spinner";
-import { AllActivityModel } from "../../../services/be-api/activities/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import { AllTourModel } from "../../../services/be-api/tours/types";
-import { usePutTour } from "../../../utils/hooks/queries/Tours";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   tour: AllTourModel;
-  onReload: () => void;
+  mutate: any;
 }
 
 const TourEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   tour,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -87,11 +81,8 @@ const TourEditModal: FC<IActivityCreateModalProps> = ({
     }
   }, [tour, reset]);
 
-  const { mutate } = usePutTour();
-
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
   });
 

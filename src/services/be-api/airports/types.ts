@@ -5,6 +5,7 @@ export interface AirportModel {
   name: string;
   description: string;
   isActive: boolean;
+  cityId?: number;
 }
 
 export interface FlightsVariables {

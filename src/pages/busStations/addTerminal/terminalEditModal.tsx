@@ -13,20 +13,19 @@ import AutocompleteContainer from "../../../components/styledComponents/Input/Au
 import Spinner from "../../../components/Spinner";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import { AllBusStationModel } from "../../../services/be-api/busStations/types";
-import { usePutTerminal } from "../../../utils/hooks/queries/BusStations";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   terminal: AllBusStationModel;
-  onReload: () => void;
+  mutate: any;
 }
 
 const TerminalEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   terminal,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -78,11 +77,8 @@ const TerminalEditModal: FC<IActivityCreateModalProps> = ({
     }
   }, [terminal, reset]);
 
-  const { mutate } = usePutTerminal();
-
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
   });
 

@@ -12,18 +12,17 @@ import { useGetAllCities } from "../../../utils/hooks/queries/Cities";
 import AutocompleteContainer from "../../../components/styledComponents/Input/AutoComplete/Autocomplete";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import { AddTerminalValues } from "../types";
-import { usePostTerminal } from "../../../utils/hooks/queries/BusStations";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const TerminalCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -34,7 +33,6 @@ const TerminalCreateModal: FC<IActivityCreateModalProps> = ({
     queryKeys: {},
   });
 
-  const { mutate } = usePostTerminal();
   const schema = yup
     .object()
     .shape({
@@ -64,7 +62,6 @@ const TerminalCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   useEffect(() => {

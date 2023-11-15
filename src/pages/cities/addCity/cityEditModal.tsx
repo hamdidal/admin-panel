@@ -8,7 +8,6 @@ import TextField from "../../../components/styledComponents/Input/TextField/Text
 import Modal from "../../../components/styledComponents/Modal/Modal";
 import { ptr } from "../../../utils/helpers";
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
-import { usePutCity } from "../../../utils/hooks/queries/Cities";
 import Spinner from "../../../components/Spinner";
 import { AllActivityModel } from "../../../services/be-api/activities/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
@@ -17,14 +16,14 @@ interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   city: AllActivityModel;
-  onReload: () => void;
+  mutate: any;
 }
 
 const CityEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   city,
-  onReload,
+  mutate,
 }) => {
   const [selectedCity, setSelectedCity] = useState(city?.id);
 
@@ -64,11 +63,8 @@ const CityEditModal: FC<IActivityCreateModalProps> = ({
     }
   }, [city, reset]);
 
-  const { mutate } = usePutCity();
-
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
   });
 

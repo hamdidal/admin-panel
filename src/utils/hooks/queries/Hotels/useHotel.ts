@@ -2,8 +2,7 @@ import { useBaseMutation, useBaseQuery } from "../_Base";
 import { Mutation, Query } from "../types";
 import {
   AddHotelData,
-  AddHotelVariables,
-  DeleteHotelData,
+  AllHotelModel,
   DeleteHotelVariables,
   GetAllHotelsServiceResponse,
   GetHotelsVariables,
@@ -11,6 +10,10 @@ import {
 } from "../../../../services/be-api/hotels/types";
 import { getAllHotels } from "../../../../services/be-api/hotels/endpoints";
 import hotelsServices from "../../../../services/be-api/hotels";
+import {
+  AddActivitiesImageVariables,
+  GetActivityByIdVariables,
+} from "../../../../services/be-api/activities/types";
 
 export const useGetHotels: Query<
   GetHotelsVariables,
@@ -77,6 +80,63 @@ export const useDeleteHotel: Mutation<
 > = () =>
   useBaseMutation({
     service: hotelsServices.deleteHotel,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
+
+export const useGetHotel: Query<any, AllHotelModel> = (params) => {
+  return useBaseQuery({
+    queryKeys: ["getByHotel", { params: params.queryKeys }],
+    service: hotelsServices.getHotelById,
+    onSuccess: {
+      messageDisplay: false,
+      message: "Succesfully, get all users",
+    },
+    onLoading: {
+      messageDisplay: false,
+      message: "Loading",
+    },
+    onError: {
+      messageDisplay: false,
+    },
+    enabled: params.enabled,
+  });
+};
+
+export const usePostHotelImage: Mutation<
+  AddActivitiesImageVariables,
+  GetAllHotelsServiceResponse
+> = () =>
+  useBaseMutation({
+    service: hotelsServices.postAddHotelImages,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
+
+export const useDeleteHotelImage: Mutation<
+  GetActivityByIdVariables,
+  GetAllHotelsServiceResponse
+> = () =>
+  useBaseMutation({
+    service: hotelsServices.deleteHotelImage,
     onSuccess: {
       messageDisplay: true,
       message: "Başarılı bir şekilde giriş yapıldı.",

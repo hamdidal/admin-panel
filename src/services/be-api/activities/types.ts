@@ -32,6 +32,11 @@ export interface AddActivityVariables {
   images?: (string | undefined)[];
 }
 
+export interface AddActivitiesImageVariables {
+  id: number;
+  image: File[];
+}
+
 export interface UpdateActivityVariables {
   id: number;
   name: string;
@@ -47,6 +52,10 @@ export interface UpdateActivityData {
 
 export interface AddActivityData {
   data: AddActivityVariables;
+}
+
+export interface AddActivityImageData {
+  data: AddActivitiesImageVariables;
 }
 
 export type GetAllActivitiesServiceResponse = AllActivityModel;

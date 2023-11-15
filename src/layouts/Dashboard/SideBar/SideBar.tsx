@@ -15,19 +15,39 @@ import {
   LocalActivity,
   LocationCity,
 } from "@mui/icons-material";
+import useAuthStore from "../../../context/auth-store";
+import { useJwt } from "react-jwt";
 
 const SideBar: React.FunctionComponent<SideBarProps> = () => {
   const menuIconsStyles = {
     fontSize: "1.25rem",
+  };
+  const { user } = useAuthStore();
+  const { decodedToken } = useJwt(user.token.accessToken);
+
+  const isAdmin = () => {
+    if (user) {
+      const roles =
+        (decodedToken as { [key: string]: any })?.[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] ?? [];
+
+      return roles.includes("Admin");
+    }
   };
 
   const menuItems = [
     {
       subheader: "KİŞİLER",
       id: "users",
-      text: "Kullanıcılar",
-      icon: <SupervisedUserCircleRoundedIcon sx={menuIconsStyles} />,
+      text: `${isAdmin() ? "Kullanıcılar" : ""}`,
+      icon: isAdmin() ? (
+        <SupervisedUserCircleRoundedIcon sx={menuIconsStyles} />
+      ) : (
+        ""
+      ),
       path: "/users",
+      visible: isAdmin(),
     },
     {
       text: "Aktiviteler",
@@ -35,9 +55,6 @@ const SideBar: React.FunctionComponent<SideBarProps> = () => {
       icon: <LocalActivity sx={menuIconsStyles} />,
       path: "/activities",
     },
-
-
-
     {
       subheader: "YETKİ İŞLEMLERİ",
       id: "claims",
@@ -45,9 +62,6 @@ const SideBar: React.FunctionComponent<SideBarProps> = () => {
       icon: <SupervisedUserCircleRoundedIcon sx={menuIconsStyles} />,
       path: "/claims",
     },
-   
-
-
 
     {
       subheader: "ULAŞIM VE TURLAR",

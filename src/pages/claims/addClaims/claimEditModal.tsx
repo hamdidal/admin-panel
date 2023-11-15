@@ -10,20 +10,19 @@ import { ptr } from "../../../utils/helpers";
 import Spinner from "../../../components/Spinner";
 import { AllClaimModel } from "../../../services/be-api/claims/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
-import { usePutClaim } from "../../../utils/hooks/queries/Claims";
 
 interface IClaimUpdateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   claim: AllClaimModel;
-  onReload: () => void;
+  mutate: any;
 }
 
 const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
   setShow,
   show,
   claim,
-  onReload,
+  mutate,
 }) => {
   const [selectedClaim, setSelectedClaim] = useState(claim?.id);
 
@@ -40,7 +39,6 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
     handleSubmit,
     reset,
     formState: { errors },
-    watch,
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
@@ -60,11 +58,8 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
     }
   }, [claim, reset]);
 
-  const { mutate } = usePutClaim();
-
   const handleUpdate = handleSubmit(async (e) => {
     mutate(e);
-    onReload();
     setShow(!show);
   });
 
@@ -109,8 +104,6 @@ const ClaimEditModal: FC<IClaimUpdateModalProps> = ({
                 />
               )}
             />
-
-         
           </Form>
         </form>
       </CustomContainer>

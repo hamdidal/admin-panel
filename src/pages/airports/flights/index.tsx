@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Box } from "@mui/material";
 import { TableBodyRowData } from "../../../components/styledComponents/Table/types";
@@ -21,6 +21,7 @@ import {
   ptr,
 } from "../../../utils/helpers";
 import {
+  useCreateFlight,
   useDeleteFlight,
   useGetAllAirports,
   useGetAllFlights,
@@ -55,12 +56,14 @@ const FlightsPage = () => {
     mode: "none" | "create" | "edit";
   });
   const [open, setOpen] = useState(false);
+
   const { data, isSuccess, isLoading } = useGetAllFlights({
     queryKeys: {
       airportId: selectedAirport,
     },
   });
-  const { mutate } = useDeleteFlight();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } = useDeleteFlight();
+  const { mutate: createMutate, isSuccess: createSuccess } = useCreateFlight();
 
   const {
     data: airportsData,
@@ -104,19 +107,12 @@ const FlightsPage = () => {
     setOpen(!open);
   };
   const handleModalConfirm = (id: number) => {
-    mutate({
+    deleteMutate({
       airportId: selectedAirport,
       airportFlightsId: id,
     });
 
     setOpen(!open);
-    refetch();
-  };
-
-  useEffect(() => {}, [refetch]);
-
-  const handleReload = async () => {
-    await refetch();
   };
 
   const onPageChange = (
@@ -143,6 +139,17 @@ const FlightsPage = () => {
     filterData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterText]);
+
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || createSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, createSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
 
   const rowData: TableBodyRowData[] =
     flights &&
@@ -254,7 +261,7 @@ const FlightsPage = () => {
           <FlightCreateModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "create"}
-            onReload={handleReload}
+            mutate={createMutate}
           />
         </FilterGroup>
       </FilterSection>

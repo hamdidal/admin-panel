@@ -2,10 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import {
-  useGetActivity,
-  usePutActivity,
-} from "../../../utils/hooks/queries/Activities";
 import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
@@ -22,14 +18,14 @@ interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   activity: AllActivityModel;
-  onReload: () => void;
+  mutate: any;
 }
 
 const ActivityEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   activity,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -84,11 +80,8 @@ const ActivityEditModal: FC<IActivityCreateModalProps> = ({
     }
   }, [activity, reset]);
 
-  const { mutate, isSuccess } = usePutActivity();
-
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
   });
 

@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { usePostActivity } from "../../../utils/hooks/queries/Activities";
 import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
@@ -13,18 +12,17 @@ import { useGetAllCities } from "../../../utils/hooks/queries/Cities";
 import AutocompleteContainer from "../../../components/styledComponents/Input/AutoComplete/Autocomplete";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import { AddTourValues } from "../types";
-import { usePostTour } from "../../../utils/hooks/queries/Tours";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any
 }
 
 const TourCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -35,7 +33,6 @@ const TourCreateModal: FC<IActivityCreateModalProps> = ({
     queryKeys: {},
   });
 
-  const { mutate, isSuccess } = usePostTour();
   const schema = yup
     .object()
     .shape({
@@ -69,7 +66,6 @@ const TourCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   useEffect(() => {

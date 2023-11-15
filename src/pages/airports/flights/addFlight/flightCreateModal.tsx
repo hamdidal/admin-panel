@@ -7,10 +7,7 @@ import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
 import AutocompleteContainer from "../../../../components/styledComponents/Input/AutoComplete/Autocomplete";
-import {
-  useCreateFlight,
-  useGetAllAirports,
-} from "../../../../utils/hooks/queries/Airports";
+import { useGetAllAirports } from "../../../../utils/hooks/queries/Airports";
 import Typography from "../../../../components/styledComponents/Typography/Typography";
 import { ptr } from "../../../../utils/helpers";
 import Modal from "../../../../components/styledComponents/Modal/Modal";
@@ -28,19 +25,18 @@ import dayjs from "dayjs";
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const FlightCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
   const [airportOptions, setAirportOptions] = useState<
     { value: string | number; label: string | number }[]
   >([]);
   const [selectedAirport] = useState(1);
-  const { mutate } = useCreateFlight();
   const { data: airportsData, isSuccess: airportsSuccess } = useGetAllAirports({
     queryKeys: {},
   });
@@ -101,7 +97,6 @@ const FlightCreateModal: FC<IActivityCreateModalProps> = ({
       },
     });
     setShow(!show);
-    onReload();
   });
 
   const handleCancel = () => {

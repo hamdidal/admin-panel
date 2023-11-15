@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box } from "@mui/material";
@@ -20,6 +20,8 @@ import DashboardLayout from "../../layouts/Dashboard/DashboardLayout";
 import {
   useDeleteAirport,
   useGetAllAirports,
+  usePostAirport,
+  usePutAirport,
 } from "../../utils/hooks/queries/Airports";
 import CheckBox from "../../components/styledComponents/Buttons/Checkbox/Checkbox";
 import Button from "../../components/styledComponents/Buttons/Button/Button";
@@ -50,10 +52,13 @@ const AirportsPage = () => {
   const [open, setOpen] = useState(false);
   const [selectedAirport, setSelectedAirport] = useState(0);
 
+  const { mutate, isSuccess: deleteSuccess } = useDeleteAirport();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutAirport();
+  const { mutate: postMutate, isSuccess: postSuccess } = usePostAirport();
+
   const { data, isSuccess, isLoading, refetch } = useGetAllAirports({
     queryKeys: {},
   });
-  const { mutate } = useDeleteAirport();
 
   useEffect(() => {
     if (isSuccess && data?.data) {
@@ -107,14 +112,21 @@ const AirportsPage = () => {
   const handleToggle = () => {
     setOpen(!open);
   };
-  const handleModalConfirm = (id: number) => {
+  const handleModalConfirm = async (id: number) => {
     mutate({ id });
     setOpen(!open);
   };
 
-  const handleReload = async () => {
-    await refetch();
-  };
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess || postSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess, postSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
 
   const rowData: TableBodyRowData[] =
     airports &&
@@ -205,12 +217,12 @@ const AirportsPage = () => {
           <AirportCreateModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "create"}
-            onReload={handleReload}
+            mutate={postMutate}
           />
           <AirportEditModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "edit"}
-            onReload={handleReload}
+            mutate={editMutate}
             airport={
               airports?.filter((data: any) => data.id === selectedAirport)[0]
             }

@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box } from "@mui/material";
@@ -21,6 +21,8 @@ import CheckBox from "../../components/styledComponents/Buttons/Checkbox/Checkbo
 import {
   useDeleteTerminal,
   useGetBusStations,
+  usePostTerminal,
+  usePutTerminal,
 } from "../../utils/hooks/queries/BusStations";
 import AutocompleteContainer from "../../components/styledComponents/Input/AutoComplete/Autocomplete";
 import { useGetAllCities } from "../../utils/hooks/queries/Cities";
@@ -65,7 +67,10 @@ const BusStationsPage = () => {
     queryKeys: {},
   });
 
-  const { mutate } = useDeleteTerminal();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } =
+    useDeleteTerminal();
+  const { mutate: postMutate, isSuccess: postSuccess } = usePostTerminal();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutTerminal();
 
   useEffect(() => {
     if (cityData?.data && citySuccess) {
@@ -84,11 +89,6 @@ const BusStationsPage = () => {
     }
   }, [isSuccess, data?.data]);
 
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.data]);
-
   const handleFilter = (event: any): void => {
     _debounce(() => {
       setFilterText(event);
@@ -100,7 +100,7 @@ const BusStationsPage = () => {
   };
 
   const handleModalConfirm = (id: number) => {
-    mutate({ id });
+    deleteMutate({ id });
     setOpen(!open);
   };
 
@@ -140,9 +140,16 @@ const BusStationsPage = () => {
     setCurrentPage(newPage);
   };
 
-  const handleReload = async () => {
-    await refetch();
-  };
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess || postSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess, postSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
 
   const rowData: TableBodyRowData[] =
     stations &&
@@ -257,12 +264,12 @@ const BusStationsPage = () => {
           <TerminalCreateModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "create"}
-            onReload={handleReload}
+            mutate={postMutate}
           />
           <TerminalEditModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "edit"}
-            onReload={handleReload}
+            mutate={editMutate}
             terminal={
               data?.data.filter((data: any) => data.id === selectedStation)[0]
             }

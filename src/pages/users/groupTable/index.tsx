@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Add, Delete, Update, Verified } from "@mui/icons-material";
@@ -16,12 +16,16 @@ import Button from "../../../components/styledComponents/Buttons/Button/Button";
 import GroupCreateModal from "./addGroup/groupCreateModal";
 import GroupEditModal from "./addGroup/groupEditModal";
 import _debounce from "lodash/debounce";
-import { useDeleteGroup } from "../../../utils/hooks/queries/Groups";
+import {
+  useDeleteGroup,
+  usePostGroup,
+  usePutGroup,
+} from "../../../utils/hooks/queries/Groups";
 import Fuse from "fuse.js";
 import Modal from "../../../components/styledComponents/Modal/Modal";
 
 export const groupsHead: GridColDef[] = [
-  { field: "name", headerName: "GRUP İSMİ", width: 130 },
+  { field: "name", headerName: "GRUP İSMİ", width: 230 },
   { field: "telephone", headerName: "TELEFON", width: 130 },
   { field: "role", headerName: "ROL", width: 130 },
   { field: "updateAndDelete", headerName: "", width: 130 },
@@ -46,18 +50,15 @@ const GroupTable: React.FC<DataProps> = ({
   const [open, setOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState(0);
 
-  const { mutate } = useDeleteGroup();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } = useDeleteGroup();
+  const { mutate: postMutate, isSuccess: postSuccess } = usePostGroup();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutGroup();
 
   useEffect(() => {
     if (isSuccess && data) {
       setGroups(data);
     }
   }, [data, isSuccess]);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   const handleFilter = (event: any): void => {
     _debounce(() => {
@@ -69,7 +70,7 @@ const GroupTable: React.FC<DataProps> = ({
     setOpen(!open);
   };
   const handleModalConfirm = (id: number) => {
-    mutate({ id });
+    deleteMutate({ id });
     setOpen(!open);
   };
 
@@ -109,9 +110,16 @@ const GroupTable: React.FC<DataProps> = ({
     setCurrentPage(newPage);
   };
 
-  const handleReload = async () => {
-    await refetch();
-  };
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess || postSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess, postSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
 
   const rowData: TableBodyRowData[] =
     groups &&
@@ -207,13 +215,13 @@ const GroupTable: React.FC<DataProps> = ({
           <GroupCreateModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "create"}
-            onReload={handleReload}
+            mutate={postMutate}
           />
 
           <GroupEditModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "edit"}
-            onReload={handleReload}
+            mutate={editMutate}
             group={data?.filter((data: any) => data.id === selectedGroupId)[0]}
           />
         </FilterGroup>

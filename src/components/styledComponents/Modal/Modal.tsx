@@ -4,9 +4,9 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
 import Button from "../Buttons/Button/Button";
 
-import { CustomAddModal, CustomModal } from "./Modal.styled";
+import { CustomAddModal, CustomModal, CustomModalImg } from "./Modal.styled";
 import { ModalProps } from "./types";
-import { CheckCircle, DeleteOutline } from "@mui/icons-material";
+import { CheckCircle, Delete, DeleteOutline } from "@mui/icons-material";
 
 const Modal: React.FunctionComponent<ModalProps> = ({
   open,
@@ -22,6 +22,7 @@ const Modal: React.FunctionComponent<ModalProps> = ({
   type,
   style,
   isAdd,
+  isImg,
 }: ModalProps) => {
   return isAdd ? (
     <CustomAddModal open={open} hideBackdrop>
@@ -79,6 +80,40 @@ const Modal: React.FunctionComponent<ModalProps> = ({
         </div>
       </div>
     </CustomAddModal>
+  ) : isImg ? (
+    <CustomModalImg open={open} hideBackdrop>
+      <div style={style} className="modal-body">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <IconButton
+            style={{ background: "white", color: "black" }}
+            aria-label="close"
+            onClick={() => {
+              onConfirm();
+            }}
+            className="delete-modal"
+          >
+            <Delete />
+          </IconButton>
+          <IconButton
+            style={{ background: "white", color: "black" }}
+            aria-label="close"
+            onClick={() => {
+              onClose();
+            }}
+            className="close-modal"
+          >
+            <CloseOutlinedIcon />
+          </IconButton>
+        </Box>
+        <div className="form-body">{children}</div>
+      </div>
+    </CustomModalImg>
   ) : (
     <CustomModal open={open} hideBackdrop>
       <div style={style} className="modal-body">

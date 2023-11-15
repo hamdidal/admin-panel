@@ -8,25 +8,20 @@ import Form from "../../../components/styledComponents/Form/Form";
 import Modal from "../../../components/styledComponents/Modal/Modal";
 import { ptr } from "../../../utils/helpers";
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
-import {
-  useCreateCity,
-  useGetAllCities,
-} from "../../../utils/hooks/queries/Cities";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const CityCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
-  const { mutate } = useCreateCity();
   const schema = yup
     .object()
     .shape({
@@ -52,7 +47,6 @@ const CityCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   const handleCancel = () => {

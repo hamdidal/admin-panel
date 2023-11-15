@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { usePostActivity } from "../../../utils/hooks/queries/Activities";
 import { AddActivityValues } from "../types";
 import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
@@ -17,13 +16,13 @@ import Typography from "../../../components/styledComponents/Typography/Typograp
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const ActivityCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -34,7 +33,6 @@ const ActivityCreateModal: FC<IActivityCreateModalProps> = ({
     queryKeys: {},
   });
 
-  const { mutate } = usePostActivity();
   const schema = yup
     .object()
     .shape({
@@ -68,7 +66,6 @@ const ActivityCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   useEffect(() => {

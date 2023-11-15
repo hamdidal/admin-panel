@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useGetActivity } from "../../../utils/hooks/queries/Activities";
+import {
+  useDeleteActivityImage,
+  useGetActivity,
+  usePostActivityImage,
+} from "../../../utils/hooks/queries/Activities";
 import {
   CustomCompanyFirstBox,
-  CustomCompanyFourthBox,
   CustomCompanyProfileBox,
   CustomCompanyProfileContainer,
   CustomCompanyProfileTableDiv,
@@ -13,20 +16,25 @@ import {
   TextAlignCenterDiv,
 } from "./index.styled";
 import Typography from "../../../components/styledComponents/Typography/Typography";
-import { Divider } from "@mui/material";
+import { Box, Button, Divider, ImageList, ImageListItem } from "@mui/material";
 import { colors } from "../../../styles/color";
-import Modal from "../../../components/styledComponents/Modal/Modal";
-import Button from "../../../components/styledComponents/Buttons/Button/Button";
 import DashboardLayout from "../../../layouts/Dashboard/DashboardLayout";
 import { AllActivityModel } from "../../../services/be-api/activities/types";
 import "react-slideshow-image/dist/styles.css";
 import Spinner from "../../../components/Spinner";
+import Modal from "../../../components/styledComponents/Modal/Modal";
 
 const ActivityDetail = () => {
   const { id } = useParams();
   const [activity, setActivity] = useState<AllActivityModel>();
-
-  const { data, isSuccess, isLoading } = useGetActivity({
+  const [open, setOpen] = useState(false);
+  const [link, setlink] = useState("");
+  const [selectedImages, setSelectedImages] = useState<any>([]);
+  const [selectedImageId, setSelectedImageId] = useState(0);
+  const { mutate: postMutate, isSuccess: postSuccess } = usePostActivityImage();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } =
+    useDeleteActivityImage();
+  const { data, isSuccess, isLoading, refetch } = useGetActivity({
     queryKeys: {
       id: id,
     },
@@ -38,115 +46,167 @@ const ActivityDetail = () => {
     }
   }, [data?.data, isSuccess]);
 
-  return isLoading ? (
-    <Spinner />
-  ) : (
+  const handlePhoto = (link: string) => {
+    setOpen(!open);
+    setlink(link);
+  };
+
+  const handleImageChange = (e: any) => {
+    const files = e.target.files;
+    setSelectedImages([...selectedImages, ...files]);
+  };
+
+  useEffect(() => {
+    if (selectedImages.length > 0) {
+      postMutate({
+        id: Number(id),
+        image: selectedImages,
+      });
+      setSelectedImages("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedImages]);
+
+  const handleModalConfirm = (id: number) => {
+    deleteMutate({ id });
+    setOpen(!open);
+  };
+
+  const refetchIfSuccess = useCallback(() => {
+    if (postSuccess || deleteSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postSuccess, deleteSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
+
+  return (
     <DashboardLayout>
-      <CustomCompanyProfileContainer>
-        <CustomCompanyProfileTableDiv>
-          <CustomCompanyProfileBox>
-            <CustomCompanyFirstBox>
-              <TextAlignCenterDiv>
-                <Typography variant="body-normal-default"></Typography>
-              </TextAlignCenterDiv>
-            </CustomCompanyFirstBox>
-            <CustomCompanyThirdBox>
-              <CustomDetailsDiv>
-                <CustomDetailsBox>
-                  <Typography
-                    color={colors.text.primaryTextLight}
-                    variant="h6-medium"
-                  >
-                    Aktivite Başlığı :
-                  </Typography>
-                  <Typography
-                    color={colors.text.secondaryTextLight}
-                    variant="h6-medium"
-                  >
-                    {activity?.title}
-                  </Typography>
-                </CustomDetailsBox>
-                <Divider orientation="horizontal"></Divider>
-                <CustomDetailsBox>
-                  <Typography
-                    color={colors.text.primaryTextLight}
-                    variant="body-small-medium"
-                  >
-                    İsmi :
-                  </Typography>
-                  <Typography
-                    color={colors.text.secondaryTextLight}
-                    variant="body-small-default"
-                  >
-                    {activity?.name}
-                  </Typography>
-                </CustomDetailsBox>
-                <CustomDetailsBox>
-                  <Typography
-                    color={colors.text.primaryTextLight}
-                    variant="body-small-medium"
-                  >
-                    Açıklama :
-                  </Typography>
-                  <Typography
-                    color={colors.text.secondaryTextLight}
-                    variant="body-small-default"
-                  >
-                    {activity?.description}
-                  </Typography>
-                </CustomDetailsBox>
-                <CustomDetailsBox>
-                  <Typography
-                    color={colors.text.primaryTextLight}
-                    variant="body-small-medium"
-                  >
-                    Şehir :
-                  </Typography>
-                  <Typography
-                    color={colors.text.secondaryTextLight}
-                    variant="body-small-default"
-                  >
-                    {activity?.city.name}
-                  </Typography>
-                </CustomDetailsBox>{" "}
-                <Divider orientation="horizontal"></Divider>
-                {/* <CustomDetailsBox>
-                {activity?.images.map((image) => (
-                  <Slide>
-                    <div
-                      style={{ backgroundImage: `url(${image.imageUrl})` }}
-                      className="each-slide-effect"
-                    ></div>
-                  </Slide>
-                ))}
-              </CustomDetailsBox>{" "} */}
-              </CustomDetailsDiv>
-            </CustomCompanyThirdBox>
-            <CustomCompanyFourthBox>
-              <Button onClick={() => "11"}>DÜZENLE</Button>
-              <Button
-                onClick={() => "11"}
-                variant="outlined"
-                colorsx={colors.error.errorMain}
-                borderColor={colors.error.errorMain}
-              >
-                SİL
-              </Button>
-            </CustomCompanyFourthBox>
-          </CustomCompanyProfileBox>
-        </CustomCompanyProfileTableDiv>
-        <Modal
-          open={false}
-          onClose={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-          onConfirm={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-          header={undefined}
-          subheader={undefined}
-        ></Modal>
-      </CustomCompanyProfileContainer>
+      {activity ? (
+        <CustomCompanyProfileContainer>
+          <CustomCompanyProfileTableDiv>
+            <CustomCompanyProfileBox>
+              <CustomCompanyFirstBox>
+                <TextAlignCenterDiv>
+                  <Button variant="contained" component="label">
+                    Fotoğraf Yükle
+                    <input
+                      type="file"
+                      multiple
+                      hidden
+                      onChange={handleImageChange}
+                    />
+                  </Button>
+                </TextAlignCenterDiv>
+              </CustomCompanyFirstBox>
+              <CustomCompanyThirdBox>
+                <CustomDetailsDiv>
+                  <CustomDetailsBox>
+                    <Typography
+                      color={colors.text.primaryTextLight}
+                      variant="h6-medium"
+                    >
+                      Aktivite Başlığı :
+                    </Typography>
+                    <Typography
+                      color={colors.text.secondaryTextLight}
+                      variant="h6-medium"
+                    >
+                      {activity?.title}
+                    </Typography>
+                  </CustomDetailsBox>
+                  <Divider orientation="horizontal"></Divider>
+                  <CustomDetailsBox>
+                    <Typography
+                      color={colors.text.primaryTextLight}
+                      variant="body-small-medium"
+                    >
+                      İsmi :
+                    </Typography>
+                    <Typography
+                      color={colors.text.secondaryTextLight}
+                      variant="body-small-default"
+                    >
+                      {activity?.name}
+                    </Typography>
+                  </CustomDetailsBox>
+                  <CustomDetailsBox>
+                    <Typography
+                      color={colors.text.primaryTextLight}
+                      variant="body-small-medium"
+                    >
+                      Açıklama :
+                    </Typography>
+                    <Typography
+                      color={colors.text.secondaryTextLight}
+                      variant="body-small-default"
+                    >
+                      {activity?.description}
+                    </Typography>
+                  </CustomDetailsBox>
+                  <CustomDetailsBox>
+                    <Typography
+                      color={colors.text.primaryTextLight}
+                      variant="body-small-medium"
+                    >
+                      Şehir :
+                    </Typography>
+                    <Typography
+                      color={colors.text.secondaryTextLight}
+                      variant="body-small-default"
+                    >
+                      {activity?.city.name}
+                    </Typography>
+                  </CustomDetailsBox>{" "}
+                  <Divider orientation="horizontal"></Divider>
+                </CustomDetailsDiv>
+              </CustomCompanyThirdBox>
+            </CustomCompanyProfileBox>
+          </CustomCompanyProfileTableDiv>
+          <Box>
+            <ImageList
+              sx={{ width: 500, height: 450 }}
+              cols={3}
+              rowHeight={200}
+            >
+              {activity.images.map((item) => (
+                <ImageListItem key={item.id}>
+                  <img
+                    srcSet={`http://3.91.46.127/${item.imageUrl}`}
+                    src={`http://3.91.46.127/${item.imageUrl}`}
+                    alt={""}
+                    loading="lazy"
+                    onClick={() => {
+                      handlePhoto(`http://3.91.46.127/${item.imageUrl}`);
+                      setSelectedImageId(Number(item.id));
+                    }}
+                  />
+                </ImageListItem>
+              ))}
+            </ImageList>
+          </Box>
+        </CustomCompanyProfileContainer>
+      ) : (
+        <Spinner open={isLoading} />
+      )}
+
+      <Modal
+        open={open}
+        onClose={() => setOpen(!open)}
+        onConfirm={() => handleModalConfirm(selectedImageId)}
+        isImg
+      >
+        <img
+          width="100%"
+          height="100%"
+          src={`${link}`}
+          alt={""}
+          loading="lazy"
+        />
+      </Modal>
     </DashboardLayout>
   );
 };

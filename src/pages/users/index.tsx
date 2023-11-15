@@ -20,6 +20,7 @@ const UsersPage = () => {
     data: usersData,
     isSuccess: isGetAllUsersSuccess,
     isLoading: isGetAllUsersLoading,
+    refetch: userRefetch,
   } = useGetAllUsers({
     queryKeys: {},
   });
@@ -106,6 +107,7 @@ const UsersPage = () => {
           data={usersData?.data}
           isLoading={isGetAllUsersLoading}
           isSuccess={isGetAllUsersSuccess}
+          refetch={userRefetch}
         />
         <GroupTable
           data={groupsData?.data}

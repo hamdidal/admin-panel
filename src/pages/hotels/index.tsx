@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box } from "@mui/material";
@@ -20,7 +20,12 @@ import DashboardLayout from "../../layouts/Dashboard/DashboardLayout";
 import CheckBox from "../../components/styledComponents/Buttons/Checkbox/Checkbox";
 import AutocompleteContainer from "../../components/styledComponents/Input/AutoComplete/Autocomplete";
 import { useGetAllCities } from "../../utils/hooks/queries/Cities";
-import { useDeleteHotel, useGetHotels } from "../../utils/hooks/queries/Hotels";
+import {
+  useCreateHotel,
+  useDeleteHotel,
+  useGetHotels,
+  usePutHotel,
+} from "../../utils/hooks/queries/Hotels";
 import Button from "../../components/styledComponents/Buttons/Button/Button";
 import { Add, Delete, Update } from "@mui/icons-material";
 import SearchInput from "../../components/styledComponents/Input/SearchInput/SearchInput";
@@ -61,7 +66,9 @@ const HotelsPage = () => {
   const { data: cityData, isSuccess: citySuccess } = useGetAllCities({
     queryKeys: {},
   });
-  const { mutate } = useDeleteHotel();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } = useDeleteHotel();
+  const { mutate: postMutate, isSuccess: postSuccess } = useCreateHotel();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutHotel();
 
   useEffect(() => {
     if (cityData?.data && citySuccess) {
@@ -101,19 +108,12 @@ const HotelsPage = () => {
     setOpen(!open);
   };
   const handleModalConfirm = (hotelId: number) => {
-    mutate({
+    deleteMutate({
       hotelId: hotelId,
       cityId: selectedCity,
     });
 
     setOpen(!open);
-    refetch();
-  };
-
-  useEffect(() => {}, [refetch]);
-
-  const handleReload = async () => {
-    await refetch();
   };
 
   const onPageChange = (
@@ -141,6 +141,17 @@ const HotelsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterText]);
 
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess || postSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess, postSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
+
   const rowData: TableBodyRowData[] =
     hotels &&
     hotels.map((hotel) => {
@@ -150,7 +161,7 @@ const HotelsPage = () => {
             <UserNameBox>
               <Typography
                 variant="body-normal-medium"
-                onClick={() => handleTo(hotel.id as number, "airports")}
+                onClick={() => handleTo(hotel.id as number, "hotels")}
               >
                 {hotel.name}
               </Typography>
@@ -254,12 +265,12 @@ const HotelsPage = () => {
           <HotelCreateModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "create"}
-            onReload={handleReload}
+            mutate={postMutate}
           />
           <HotelEditModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "edit"}
-            onReload={handleReload}
+            mutate={editMutate}
             hotel={
               data?.data.filter((data: any) => data.id === selectedHotelId)[0]
             }

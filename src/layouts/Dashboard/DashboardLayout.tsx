@@ -6,7 +6,6 @@ import { DashboardContainer, DashboardContent, DashboardMain } from './Dashboard
 import { DashboardLayoutProps } from './types'
 import SideBar from './SideBar/SideBar'
 import Header from './Header/Header'
-import Footer from './Footer/Footer'
 import useAuthStore from '../../context/auth-store'
 import useUserStore from '../../context/user-store'
 
@@ -28,7 +27,6 @@ const DashboardLayout: React.FunctionComponent<DashboardLayoutProps> = ({ childr
                 <Header logOut={handleLogOut} user={user} />
                 <DashboardContent>
                     {children}
-                    <Footer />
                 </DashboardContent>
             </DashboardMain>
         </DashboardContainer>

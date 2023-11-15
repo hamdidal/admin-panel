@@ -58,6 +58,7 @@ export const CustomCompanyThirdBox = styled(Box)({
   justifyContent: "flex-start",
   flexDirection: "column",
   textAlign: "start",
+  width: "100%",
 });
 export const CustomCompanyFourthBox = styled(Box)({
   display: "flex",
@@ -77,7 +78,7 @@ export const CustomDetailsBox = styled(Box)({
   textAlign: "center",
   alignItems: "center",
   gap: ptr(5),
-  width: ptr(280),
+  width: "100%",
 });
 export const CustomTableHeadBox = styled(Box)({
   display: "flex",

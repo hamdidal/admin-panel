@@ -44,6 +44,9 @@ const Typography: React.FunctionComponent<TypographyProps> = ({
         minHeight: ptr(30),
         display: "flex",
         alignItems: "center",
+        maxWidth: "90%",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
       }}
       onClick={onClick}
       size={calculatedSize}

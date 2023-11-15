@@ -11,6 +11,9 @@ import HotelsPage from "../../pages/hotels";
 import ActivityDetail from "../../pages/activities/activityDetail";
 import UserDetail from "../../pages/users/userDetail";
 import ClaimsPage from "../../pages/claims";
+import GroupDetail from "../../pages/users/groupDetail";
+import TourDetail from "../../pages/tours/tourDetail";
+import HotelDetail from "../../pages/hotels/hotelDetail";
 
 const RouterList: RouteType[] = [
   { Page: AddActivity, path: "/login", pageType: "public" },
@@ -25,6 +28,9 @@ const RouterList: RouteType[] = [
   { Page: HotelsPage, path: "/hotels", pageType: "protected" },
   { Page: ActivityDetail, path: "/activities/:id", pageType: "protected" },
   { Page: UserDetail, path: "/users/:id", pageType: "protected" },
+  { Page: HotelDetail, path: "/hotels/:id", pageType: "protected" },
+  { Page: GroupDetail, path: "/groups/:id", pageType: "protected" },
+  { Page: TourDetail, path: "/tours/:id", pageType: "protected" },
 ];
 
 export default RouterList;

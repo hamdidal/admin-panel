@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box } from "@mui/material";
@@ -17,10 +17,11 @@ import Typography from "../../components/styledComponents/Typography/Typography"
 import Table from "../../components/styledComponents/Table";
 import { ptr } from "../../utils/helpers";
 import DashboardLayout from "../../layouts/Dashboard/DashboardLayout";
-import CheckBox from "../../components/styledComponents/Buttons/Checkbox/Checkbox";
 import {
+  useCreateClaim,
   useDeleteClaim,
   useGetAllClaim,
+  usePutClaim,
 } from "../../utils/hooks/queries/Claims";
 import Button from "../../components/styledComponents/Buttons/Button/Button";
 import { Add, Delete, Update } from "@mui/icons-material";
@@ -51,7 +52,9 @@ const ClaimsPage = () => {
   const [open, setOpen] = useState(false);
   const [selectedCityId, setSelectedCityId] = useState(0);
   const [filterText, setFilterText] = useState("");
-  const { mutate } = useDeleteClaim();
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } = useDeleteClaim();
+  const { mutate: postMutate, isSuccess: postSuccess } = useCreateClaim();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutClaim();
 
   useEffect(() => {
     if (isSuccess && data?.data) {
@@ -73,22 +76,15 @@ const ClaimsPage = () => {
     setOpen(!open);
   };
   const handleModalConfirm = (id: number) => {
-    mutate({ id });
+    deleteMutate({ id });
     setOpen(!open);
-    refetch();
   };
-
-  useEffect(() => {}, [refetch]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setRowPerPage(parseInt(event.target.value, 10));
     setCurrentPage(0);
-  };
-
-  const handleReload = async () => {
-    await refetch();
   };
 
   const onPageChange = (
@@ -115,6 +111,17 @@ const ClaimsPage = () => {
     filterData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterText]);
+
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess || postSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess, postSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
 
   const rowData: TableBodyRowData[] =
     claims &&
@@ -194,12 +201,12 @@ const ClaimsPage = () => {
           <ClaimCreateModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "create"}
-            onReload={handleReload}
+            mutate={postMutate}
           />
           <ClaimEditModal
             setShow={() => setShow({ mode: "none" })}
             show={show.mode === "edit"}
-            onReload={handleReload}
+            mutate={editMutate}
             claim={
               data?.data.filter((data: any) => data.id === selectedCityId)[0]
             }

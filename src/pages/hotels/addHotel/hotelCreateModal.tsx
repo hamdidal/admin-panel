@@ -8,24 +8,21 @@ import Form from "../../../components/styledComponents/Form/Form";
 import Modal from "../../../components/styledComponents/Modal/Modal";
 import { ptr } from "../../../utils/helpers";
 import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
-import {
-  useGetAllCities,
-} from "../../../utils/hooks/queries/Cities";
+import { useGetAllCities } from "../../../utils/hooks/queries/Cities";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import AutocompleteContainer from "../../../components/styledComponents/Input/AutoComplete/Autocomplete";
-import { useCreateHotel } from "../../../utils/hooks/queries/Hotels";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const HotelCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -36,7 +33,6 @@ const HotelCreateModal: FC<IActivityCreateModalProps> = ({
     queryKeys: {},
   });
 
-  const { mutate, isLoading, isSuccess } = useCreateHotel();
   const schema = yup
     .object()
     .shape({
@@ -66,7 +62,6 @@ const HotelCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import { useBaseQuery, useBaseMutation } from "../_Base";
 import { Mutation, Query } from "../types";
 import activitiesServices from "../../../../services/be-api/activities";
 import {
+  AddActivitiesImageVariables,
   GetActivityByIdVariables,
   GetAddActivityVariables,
   GetAllActivitiesServiceResponse,
@@ -71,6 +72,24 @@ export const usePostActivity: Mutation<
     },
   });
 
+export const usePostActivityImage: Mutation<
+  AddActivitiesImageVariables,
+  GetAllActivitiesServiceResponse
+> = () =>
+  useBaseMutation({
+    service: activitiesServices.postAddActivityImages,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
 export const usePutActivity: Mutation<
   GetUpdateActivityVariables,
   GetAllActivitiesServiceResponse
@@ -96,6 +115,25 @@ export const useDeleteActivity: Mutation<
 > = () =>
   useBaseMutation({
     service: activitiesServices.deleteActivity,
+    onSuccess: {
+      messageDisplay: true,
+      message: "Başarılı bir şekilde giriş yapıldı.",
+    },
+    onLoading: {
+      messageDisplay: true,
+      message: "Bilgileriniz kontrol ediliyor...",
+    },
+    onError: {
+      messageDisplay: true,
+    },
+  });
+
+export const useDeleteActivityImage: Mutation<
+  GetActivityByIdVariables,
+  GetAllActivitiesServiceResponse
+> = () =>
+  useBaseMutation({
+    service: activitiesServices.deleteActivityImage,
     onSuccess: {
       messageDisplay: true,
       message: "Başarılı bir şekilde giriş yapıldı.",

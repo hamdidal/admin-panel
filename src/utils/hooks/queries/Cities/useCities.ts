@@ -7,6 +7,7 @@ import {
   PostAddCityVariables,
   UpdateCityData,
 } from "../../../../services/be-api/cities/types";
+import { GetActivityByIdVariables } from "../../../../services/be-api/activities/types";
 
 export const useGetAllCities: Query<any, GetAllCitiesServiceResponse> = (
   params
@@ -86,3 +87,25 @@ export const useDeleteCity: Mutation<
       messageDisplay: true,
     },
   });
+
+export const useGetCity: Query<
+  GetActivityByIdVariables,
+  GetAllCitiesServiceResponse
+> = (params) => {
+  return useBaseQuery({
+    queryKeys: ["cityById", { params: params.queryKeys }],
+    service: cityServices.getCityById,
+    onSuccess: {
+      messageDisplay: false,
+      message: "Succesfully, get all users",
+    },
+    onLoading: {
+      messageDisplay: false,
+      message: "Loading",
+    },
+    onError: {
+      messageDisplay: false,
+    },
+    enabled: params.enabled,
+  });
+};

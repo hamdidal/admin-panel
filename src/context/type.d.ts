@@ -7,9 +7,16 @@ export type UserModel = {
   isSeller: boolean;
   isBuyer: boolean;
 };
+export type RoleModel = {
+  [x: string]: any;
+  id: number;
+  name: string;
+};
 export type UserState = {
   user: UserModel;
   setUser: (userData: UserModel) => void;
+  role: RoleModel;
+  setRole: (roleData: RoleModel) => void;
 };
 type AuthState = {
   user: any;

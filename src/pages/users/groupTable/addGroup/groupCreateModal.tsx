@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { usePostGroup } from "../../../../utils/hooks/queries/Groups";
 import Modal from "../../../../components/styledComponents/Modal/Modal";
 import { CustomContainer } from "./index.styled";
 import Typography from "../../../../components/styledComponents/Typography/Typography";
@@ -14,15 +13,14 @@ import { AddGroupValues } from "../../types";
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const GroupCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
-  const { mutate } = usePostGroup();
   const schema = yup
     .object()
     .shape({
@@ -45,7 +43,6 @@ const GroupCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   const handleCancel = () => {

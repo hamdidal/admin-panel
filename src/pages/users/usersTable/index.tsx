@@ -1,15 +1,14 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Box } from "@mui/material";
-import { Verified } from "@mui/icons-material";
+import { Delete, Update, Verified } from "@mui/icons-material";
 import { TableBodyRowData } from "../../../components/styledComponents/Table/types";
 import Typography from "../../../components/styledComponents/Typography/Typography";
 import { colors } from "../../../styles/color";
 import Table from "../../../components/styledComponents/Table";
 import { ptr } from "../../../utils/helpers";
-import { DataGrid } from "@mui/x-data-grid";
 
 import { DataProps } from "../types";
 import {
@@ -22,21 +21,40 @@ import { FilterGroup, FilterSection } from "../groupTable/index.styled";
 import SearchInput from "../../../components/styledComponents/Input/SearchInput/SearchInput";
 import Fuse from "fuse.js";
 import _debounce from "lodash/debounce";
+import Button from "../../../components/styledComponents/Buttons/Button/Button";
+import UserEditModal from "./addGroup/userEditModal";
+import Modal from "../../../components/styledComponents/Modal/Modal";
+import {
+  useDeleteUser,
+  usePutUserByAdmin,
+} from "../../../utils/hooks/queries/Users";
 
 export const usersHead: GridColDef[] = [
-  { field: "name", headerName: "KULLANICI", width: 130 },
+  { field: "name", headerName: "KULLANICI İSMİ", width: 230 },
   { field: "telephone", headerName: "TELEFON", width: 130 },
   { field: "role", headerName: "ROL", width: 130 },
+  { field: "updateAndDelete", headerName: "", width: 130 },
 ];
 
-const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
+const UsersTable: React.FC<DataProps> = ({
+  data,
+  isLoading,
+  isSuccess,
+  refetch,
+}) => {
   const [users, setUsers] = useState<any[]>([]);
   const [filterText, setFilterText] = useState("");
-
+  const [show, setShow] = useState({ mode: "none" } as {
+    mode: "none" | "create" | "edit";
+  });
+  const [open, setOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(0);
   const navigate = useNavigate();
-
   const [currentPage, setCurrentPage] = useState(0);
   const [rowPerPage, setRowPerPage] = useState(10);
+
+  const { mutate: deleteMutate, isSuccess: deleteSuccess } = useDeleteUser();
+  const { mutate: editMutate, isSuccess: editSuccess } = usePutUserByAdmin();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -85,6 +103,25 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterText]);
 
+  const handleToggle = () => {
+    setOpen(!open);
+  };
+  const handleModalConfirm = (id: number) => {
+    deleteMutate({ id });
+    setOpen(!open);
+  };
+
+  const refetchIfSuccess = useCallback(() => {
+    if (deleteSuccess || editSuccess) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteSuccess, editSuccess]);
+
+  useEffect(() => {
+    refetchIfSuccess();
+  }, [refetchIfSuccess]);
+
   const rowData: TableBodyRowData[] =
     users &&
     users.map((user) => {
@@ -130,6 +167,38 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
             )}
           </Box>
         ),
+        updateAndDelete: (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Button
+              size="small"
+              onClick={() => {
+                setShow({ mode: "edit" });
+                setSelectedUserId(user.id);
+              }}
+              variant="text"
+            >
+              <Update />
+            </Button>
+
+            <Button
+              onClick={() => {
+                handleToggle();
+                setSelectedUserId(user.id);
+              }}
+              size="small"
+              variant="text"
+              colorsx="red"
+            >
+              <Delete />
+            </Button>
+          </Box>
+        ),
       };
     });
 
@@ -141,6 +210,12 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
             value={filterText}
             onChange={(e) => handleFilter(e)}
             placeholder="Kullanıcı Ara"
+          />
+          <UserEditModal
+            setShow={() => setShow({ mode: "none" })}
+            show={show.mode === "edit"}
+            mutate={editMutate}
+            user={data?.filter((data: any) => data.id === selectedUserId)[0]}
           />
         </FilterGroup>
       </FilterSection>
@@ -156,17 +231,15 @@ const UsersTable: React.FC<DataProps> = ({ data, isLoading, isSuccess }) => {
           isClickable={false}
           page={currentPage}
         ></Table>
-
-        {/* <DataGrid
-          style={{ width: "100%" }}
-          rows={users ? users : []}
-          columns={usersHead}
-          disableRowSelectionOnClick
-          paginationMode="client"
-          aria-label="Deneme"
-          aria-labelledby="Deneme"
-        /> */}
       </CustomTableDiv>
+      <Modal
+        type="delete"
+        open={open}
+        onClose={() => handleToggle()}
+        onConfirm={() => handleModalConfirm(selectedUserId!)}
+        header={"Kullanıcıyı Silmek Üzeresiniz"}
+        subheader={"Yine de işleme devam etmek istiyor musunuz?"}
+      ></Modal>
     </CustomCompaniesContainer>
   );
 };

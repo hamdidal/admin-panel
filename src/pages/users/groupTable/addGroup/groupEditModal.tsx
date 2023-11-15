@@ -3,7 +3,6 @@ import { FC, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Group } from "../../../../services/be-api/groups/types";
-import { usePutGroup } from "../../../../utils/hooks/queries/Groups";
 import { CustomContainer } from "./index.styled";
 import Modal from "../../../../components/styledComponents/Modal/Modal";
 import { ptr } from "../../../../utils/helpers";
@@ -16,14 +15,14 @@ interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
   group: Group;
-  onReload: () => void;
+  mutate: any;
 }
 
 const GroupEditModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
   group,
-  onReload,
+  mutate,
 }) => {
   const schema = yup
     .object()
@@ -56,11 +55,9 @@ const GroupEditModal: FC<IActivityCreateModalProps> = ({
     }
   }, [group, reset]);
 
-  const { mutate } = usePutGroup();
 
   const handleUpdate = handleSubmit(async (e) => {
     mutate({ data: e });
-    onReload();
     setShow(!show);
   });
 

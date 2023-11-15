@@ -2,7 +2,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { usePostActivity } from "../../../utils/hooks/queries/Activities";
 import { BoxOfRow, CustomContainer, MaterialUISwitch } from "./index.styled";
 import Form from "../../../components/styledComponents/Form/Form";
 import TextField from "../../../components/styledComponents/Input/TextField/TextField";
@@ -12,20 +11,18 @@ import FormControlLabel from "@mui/material/FormControlLabel/FormControlLabel";
 import { useGetAllCities } from "../../../utils/hooks/queries/Cities";
 import AutocompleteContainer from "../../../components/styledComponents/Input/AutoComplete/Autocomplete";
 import Typography from "../../../components/styledComponents/Typography/Typography";
-import { usePostTour } from "../../../utils/hooks/queries/Tours";
 import { AddAirportValues } from "../types";
-import { usePostAirport } from "../../../utils/hooks/queries/Airports";
 
 interface IActivityCreateModalProps {
   setShow: (param: any) => void;
   show: boolean;
-  onReload: () => void;
+  mutate: any;
 }
 
 const AirportCreateModal: FC<IActivityCreateModalProps> = ({
   setShow,
   show,
-  onReload,
+  mutate,
 }) => {
   const [cityOptions, setCityOptions] = useState<
     { value: string | number; label: string | number }[]
@@ -36,7 +33,6 @@ const AirportCreateModal: FC<IActivityCreateModalProps> = ({
     queryKeys: {},
   });
 
-  const { mutate, isSuccess } = usePostAirport();
   const schema = yup
     .object()
     .shape({
@@ -66,7 +62,6 @@ const AirportCreateModal: FC<IActivityCreateModalProps> = ({
   const handleAdd = handleSubmit(async (e) => {
     mutate({ data: e });
     setShow(!show);
-    onReload();
   });
 
   useEffect(() => {
@@ -96,7 +91,7 @@ const AirportCreateModal: FC<IActivityCreateModalProps> = ({
       isAdd
     >
       <CustomContainer>
-        <Typography variant="h4-semibold">Tur Ekle</Typography>
+        <Typography variant="h4-semibold">Havalimanı Ekle</Typography>
         <form
           style={{
             width: `calc(100% - ${ptr(24)})`,
